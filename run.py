@@ -7,7 +7,7 @@ http_header = { "content-type": "application/json" }
 # Core Routing
 @route('/')
 def jsontest():
-    return template('index')
+    return static_file('index.html', root='static')
 
 @route('/static/<filename:path>')
 def send_static(filename):

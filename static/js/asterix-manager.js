@@ -11,9 +11,8 @@ function parseAsterix(txt)
       Time, Datetime, Duration, Interval
       Polygon, Circle, Rectangle, Line, Point,
       double, float, ints
-  */
-  
-  
+  */    
+  return $.parseJSON(txt);
 }
 
 asterface.controller('AsterfaceCtrl', function($scope, $http){
@@ -26,13 +25,13 @@ asterface.controller('AsterfaceCtrl', function($scope, $http){
   // Load dataverses
   var query = new FLWOGRExpression()
     .ForClause("$dv", new AExpression("dataset Dataverse"))
-    .ReturnClause("$dv");
+    .ReturnClause("$dv.DataverseName");
     
   
 	$http.get(getQueryURL(query)).success(function(data){
    	$scope.dataverses = [];
     angular.forEach(data.results, function(dv){
-      $scope.dataverses.push($.parseJSON(dv));
+      $scope.dataverses.push(parseAsterix(dv));
     });
 	});
 	
@@ -46,15 +45,17 @@ asterface.controller('AsterfaceCtrl', function($scope, $http){
 	    .ReturnClause("$ds.DatasetName");
 	  $http.get(getQueryURL(query)).success(function(data){
 	    angular.forEach(data.results, function(ds){
-	      $scope.datasets.push($.parseJSON(ds));
+	      $scope.datasets.push(parseAsterix(ds));
 	    });
 	  });
 	};
 	
 	$scope.loadDataset = function()
   {
+    if(!$scope.currentDataverse || !$scope.currentDataset) return;
     var query = new FLWOGRExpression()
       .ForClause("$d", new AExpression("dataset " + $scope.currentDataverse + "." + $scope.currentDataset))
+      .LimitClause(new AExpression($scope.itemsPerPage))
       .ReturnClause("$d");
     $http.get(getQueryURL(query)).success(function(data){
       $scope.insideText = '';
@@ -66,7 +67,7 @@ asterface.controller('AsterfaceCtrl', function($scope, $http){
   };
 	
 	$scope.insideText = false;
-	
+	$scope.itemsPerPage = 30;
 });
 
 

@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html ng-app="asterface">
   <head>
-    <script type="text/javascript" src="/js/asterix-sdk-stable.js"></script>
-    <script type="text/javascript" src="/js/jquery-2.1.0.min.js"></script>
-    <script type="text/javascript" src="/js/angular.js"></script>
-    <script type="text/javascript" src="/js/asterix-manager.js"></script>
-    <link rel="stylesheet" href="/css/manager.css">
+    <script type="text/javascript" src="/static/js/jquery-2.1.0.min.js"></script>  
+    <script type="text/javascript" src="/static/js/asterix-sdk-stable.js"></script>
+    <script type="text/javascript" src="/static/js/angular.js"></script>
+    <script type="text/javascript" src="/static/js/asterix-manager.js"></script>
+    <link rel="stylesheet" href="/static/css/manager.css">
   </head>
   <body ng-controller="AsterfaceCtrl">
     <div class="header">
@@ -15,8 +15,8 @@
     <div class="browser-bar">
       <label for="dataverse-selector">Dataverse</label>
 	    <select name="dataverse-selector" ng-model="currentDataverse" ng-change="loadDataverse()">
-		    <option ng-repeat="dv in dataverses" value="{{dv.DataverseName}}">
-			    {{dv.DataverseName}}
+		    <option ng-repeat="dv in dataverses" value="{{dv}}">
+			    {{dv}}
 		    </option>
 	    </select>
       
@@ -26,6 +26,10 @@
           {{ds}}
         </option>
       </select>
+      
+      <label for="ipp">Records Per Page</label>
+      <input type="text" name="numdata-selector" ng-model="itemsPerPage" ng-change="loadDataset()">
+   
     </div>
     
     <div class="browser-box">
