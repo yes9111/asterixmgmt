@@ -6,7 +6,7 @@ $(function(){
     //loadDatasets();
 });
 
-function createLoadDataset(dv)
+function createLoadDatasets(dv)
 {
     return function(){ loadDatasets(dv); };
 }
@@ -25,15 +25,16 @@ function loadDataverses()
             for(var i in res.results)
             {
                 var link = $("<a></a>");
+                var dv = res.results[i];
                 link.attr("href", "#");
-                link.html(res.results[i]);
-                link.on('click', createLoadDataset(res.results[i]));
+                link.html(dv);
+                link.on('click', createLoadDatasets(dv));
                 container.append(link);
             }
         }
     });
-    
 }
+
 
 function loadDatasets(dv)
 {
@@ -53,8 +54,22 @@ function loadDatasets(dv)
                 var link = $("<a></a>");
                 link.attr("href", "#");
                 link.html(res.results[i]);
+                link.on('click', createLoadDataTable(dv, res.results[i]));
                 container.append(link);
             }
         }
     });
 }
+
+function createLoadDataTable(dv, ds)
+{
+    return function(){ loadData(dv, ds); };
+}
+
+function loadData(dv, ds)
+{
+    // load data from dataset
+    var query = new FLWOGRExpression()
+        .ForClause("
+}
+

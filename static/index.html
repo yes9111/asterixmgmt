@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html ng-app="asterface">
+  <head>
+    <script type="text/javascript" src="/js/asterix-sdk-stable.js"></script>
+    <script type="text/javascript" src="/js/jquery-2.1.0.min.js"></script>
+    <script type="text/javascript" src="/js/angular.js"></script>
+    <script type="text/javascript" src="/js/asterix-manager.js"></script>
+    <link rel="stylesheet" href="/css/manager.css">
+  </head>
+  <body ng-controller="AsterfaceCtrl">
+    <div class="header">
+      <h1>Asterix Console</h1>
+    </div>
+    
+    <div class="browser-bar">
+      <label for="dataverse-selector">Dataverse</label>
+	    <select name="dataverse-selector" ng-model="currentDataverse" ng-change="loadDataverse()">
+		    <option ng-repeat="dv in dataverses" value="{{dv.DataverseName}}">
+			    {{dv.DataverseName}}
+		    </option>
+	    </select>
+      
+      <label for="dataset-selector">Dataset</label>
+      <select name="dataset-selector" ng-model="currentDataset" ng-change="loadDataset()">
+        <option ng-repeat="ds in datasets" value="{{ds}}">
+          {{ds}}
+        </option>
+      </select>
+    </div>
+    
+    <div class="browser-box">
+    {{ insideText }}
+    </div>
+
+  </body>
+</html>

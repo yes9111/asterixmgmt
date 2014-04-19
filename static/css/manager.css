@@ -1,0 +1,39 @@
+body
+{
+  margin:0;
+  padding:0;
+  font-family:sans;
+}
+
+body div.header
+{
+  padding-left:1em;
+}
+
+body div.header h1
+{
+  margin:0;
+}
+
+body div.browser-bar
+{
+  background:navy;
+  padding:0.3em 0;
+  padding-left:1em;
+  color:white;
+}
+
+body div.browser-bar label
+{
+  font-weight:bold;
+}
+
+body div.browser-bar select
+{
+  margin-right:1em;
+}
+
+body div.browser-box
+{
+  padding:0 1em;
+}
