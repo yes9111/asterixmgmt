@@ -4,6 +4,7 @@
     <script type="text/javascript" src="/static/js/jquery-2.1.0.min.js"></script>  
     <script type="text/javascript" src="/static/js/asterix-sdk-stable.js"></script>
     <script type="text/javascript" src="/static/js/angular.js"></script>
+    <script type="text/javascript" src="/static/js/asterix-parser.js"></script>
     <script type="text/javascript" src="/static/js/asterix-manager.js"></script>
     <link rel="stylesheet" href="/static/css/manager.css">
   </head>
@@ -28,7 +29,10 @@
       </select>
       
       <label for="ipp">Records Per Page</label>
-      <input type="text" name="numdata-selector" ng-model="itemsPerPage" ng-change="loadDataset()">
+      <input type="number" name="numdata-selector" ng-model="itemsPerPage" ng-change="loadDataset()">
+      
+      <label for="page">Page</label>
+      <input type="number" name="page" ng-model="page" ng-change="loadDataset()">
    
     </div>
     

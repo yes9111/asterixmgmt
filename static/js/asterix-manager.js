@@ -1,20 +1,5 @@
 var asterface = angular.module('asterface', []);
 
-function parseAsterix(txt)
-{
-  /*  take Asterix output from the REST API
-      and turn it into JSON
-      most of the Asterix input can be fed into parseJSON directly, with a few exceptions.
-      Records -> Remove quotes around field names
-      Ordered Lists -> Fine
-      Unordered Lists -> Records with random key names,
-      Time, Datetime, Duration, Interval
-      Polygon, Circle, Rectangle, Line, Point,
-      double, float, ints
-  */    
-  return $.parseJSON(txt);
-}
-
 asterface.controller('AsterfaceCtrl', function($scope, $http){
   var getQueryURL = function(queryObj)
   {
@@ -55,7 +40,7 @@ asterface.controller('AsterfaceCtrl', function($scope, $http){
     if(!$scope.currentDataverse || !$scope.currentDataset) return;
     var query = new FLWOGRExpression()
       .ForClause("$d", new AExpression("dataset " + $scope.currentDataverse + "." + $scope.currentDataset))
-      .LimitClause(new AExpression($scope.itemsPerPage))
+      .LimitClause(new AExpression($scope.itemsPerPage + " offset " + ($scope.page-1)*$scope.itemsPerPage))
       .ReturnClause("$d");
     $http.get(getQueryURL(query)).success(function(data){
       $scope.insideText = '';
@@ -68,6 +53,7 @@ asterface.controller('AsterfaceCtrl', function($scope, $http){
 	
 	$scope.insideText = false;
 	$scope.itemsPerPage = 30;
+	$scope.page = 1;
 });
 
 
