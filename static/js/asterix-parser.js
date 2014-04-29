@@ -1,10 +1,21 @@
-function trimSpace(txt)
+
+function AsterixParser(txt)
 {
-  return txt.replace(/^\s+/, '');
+	this.txt = txt;
+	this.index = 0;
+	if(txt)
+	{
+		this.parse();
+	}
 }
 
-function parseAsterix(txt)
-{
+AsterixParser.prototype.parse = function(){
+	if(!this.txt)
+	{
+		alert("Cannot parse non-string inputs:" + this.txt);
+		return;
+	}
+
   /*  take Asterix output from the REST API
       and turn it into JSON
       most of the Asterix input can be fed into parseJSON directly, with a few exceptions.
@@ -16,71 +27,106 @@ function parseAsterix(txt)
       double, float, ints
   */
   // skip whitespace
-  txt = trimSpace(txt);
+	this.trimSpace();
   
-  if(txt.match(/^{/))
+  if(this.txt.match(/^{/))
   {
-    if(txt.match(/^{{/))
+    if(this.txt.match(/^{{/))
     {
-      return parseBag(txt);
+			
+      this.parseBag(this.txt);
     }
     else
     {
-      return parseRecord(txt);
+      return this.parseRecord();
     }
   }
-  else if(txt.match(/^\[/))
+  else if(this.txt.match(/^\[/))
   {
-    return parseArray(txt);
+    return this.parseArray(this.txt);
   }
-  else if(txt.match(/^(line|point|rectangle|circle|polygon)/))
+  else if(this.txt.match(/^(line|point|rectangle|circle|polygon)/))
   {
-    return parseShape(txt);
+    return this.parseShape(this.txt);
   }
-  else if(txt.match(/^(interval-)?(date|time|datetime|)/))
+  else if(this.txt.match(/^(interval-)?(date|time|datetime|)/))
   {
-    return parseTime(txt);
+    return this.parseTime(this.txt);
   }
-  else if(txt.match(/^[0-9\.]/))
+  else if(this.txt.match(/^[0-9\.]/))
   {
-    return parseNumber(txt);
+    return this.parseNumber(this.txt);
   }
 }
 
-function parseArray(txt)
+AsterixParser.prototype.trimSpace = function()
+{
+	var end = false;
+	while(!end)
+	{
+		switch(this.txt.charAt(this.index))
+		{
+		case '\n': case'\t': case' ': case'\r':
+			this.index++;
+			break;
+		default:
+			end = true;
+			break;
+		}
+	}
+}
+
+
+AsterixParser.prototype.parseArray = function()
 {
   alert("Found array");
 }
 
-function parseBag(txt)
+AsterixParser.prototype.parseBag = function()
 {
   alert("Found bag");
 }
 
-function parseRecord(txt)
+AsterixParser.prototype.parseRecord = function()
 {
-  var contentExtractor = /^{\s*(.*)\s*}\s*/;
-  var g = contentExtractor.exec(txt)[1];
-  var fieldExtractor = /("[a-zA-Z]+":)/g;
-  var m;
-  while(m = fieldExtractor.exec(g))
-  {
-    alert(m[1]);
-  }
+	// skip brace
+	// then parse field then value
+	// then parse end brace
+	var obj = {};
+	this.index++;
+	
+	do
+	{
+		this.trimComma();
+		var field = this.parseField();
+		if(!field) break;
+		obj[field] = this.parseAsterix();
+		this.trimSpace();
+	} while( this.txt.charAt(this.index) == ',');
+
+	return obj;
 }
 
-function parseNumber(txt)
+AsterixParser.prototype.trimComma = function()
 {
+	if(this.txt.charAt(this.index) != ',') return;
+	this.index++;
+	this.trimSpace();
+
+}
+
+AsterixParser.prototype.parseNumber = function()
+{
+	
   alert("Found number");
 }
 
-function parseShape(txt)
+AsterixParser.prototype.parseShape = function()
 {
   alert("Found shape");
 }
 
-function parseTime(txt)
+AsterixParser.prototype.parseTime = function()
 {
   alert("Found time");
 }
-

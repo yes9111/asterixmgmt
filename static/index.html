@@ -33,11 +33,22 @@
       
       <label for="page">Page</label>
       <input type="number" name="page" ng-model="page" ng-change="loadDataset()">
-   
+      
+      <div class="query-box" ng-submit="loadQuery()">
+        <form>
+        <input type="text" ng-model="query">
+        <input type="submit" value="Query!">
+        </form>
+      </div>
     </div>
     
     <div class="browser-box">
-    {{ insideText }}
+      <div ng-repeat="r in records" class="record">
+        <div ng-repeat="(k, v) in r" class="datum">
+          <div class="field">{{ k }} </div>
+          <div class="value">{{ v }}</div>
+        </div>
+      </div>
     </div>
 
   </body>

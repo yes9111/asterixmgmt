@@ -37,3 +37,20 @@ body div.browser-box
 {
   padding:0 1em;
 }
+
+body div.browser-box div.record
+{
+  background:#E3E3E6;
+  margin-bottom:0.5em;
+  padding:0.3em;
+}
+
+body div.browser-box div.record div.field
+{
+  color:blue;
+  font-weight:bold;
+}
+
+body div.browser-box div.record div.value
+{
+}
