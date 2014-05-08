@@ -4,9 +4,11 @@
     <script type="text/javascript" src="/static/js/jquery-2.1.0.min.js"></script>  
     <script type="text/javascript" src="/static/js/asterix-sdk-stable.js"></script>
     <script type="text/javascript" src="/static/js/angular.js"></script>
+    <script type="text/javascript" src="/static/js/angular-sanitize.js"></script>
     <script type="text/javascript" src="/static/js/asterix-parser.js"></script>
     <script type="text/javascript" src="/static/js/asterix-manager.js"></script>
     <link rel="stylesheet" href="/static/css/manager.css">
+    <title>Asterix Manager!</title>
   </head>
   <body ng-controller="AsterfaceCtrl">
     <div class="header">
@@ -46,7 +48,7 @@
       <div ng-repeat="r in records" class="record">
         <div ng-repeat="(k, v) in r" class="datum">
           <div class="field">{{ k }} </div>
-          <div class="value">{{ v }}</div>
+          <div class="value" ng-bind-html="printValue(v)"></div>
         </div>
       </div>
     </div>

@@ -35,14 +35,16 @@ body div.browser-bar select
 
 body div.browser-box
 {
-  padding:0 1em;
+  padding:0 0.7em;
 }
+
+/* RECORD STYLES */
 
 body div.browser-box div.record
 {
-  background:#E3E3E6;
-  margin-bottom:0.5em;
-  padding:0.3em;
+  background:#E3E3E6;  
+  padding:0.1em 0.7em;
+  margin-bottom:0.3em;  
 }
 
 body div.browser-box div.record div.field
@@ -54,3 +56,22 @@ body div.browser-box div.record div.field
 body div.browser-box div.record div.value
 {
 }
+
+/* UNORDERED LIST */
+body div.browser-box div.unorderedlist
+{
+  background:lightgreen; 
+  padding:0.1em 0.7em;
+  margin-bottom:0.3em;
+}
+
+
+/* ORDERED LIST */
+body div.browser-box div.orderedlist
+{
+  background:lightblue;
+  padding:0.1em 0.7em;
+  margin-bottom:0.3em;  
+}
+
+
