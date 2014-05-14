@@ -4,17 +4,24 @@ var A = new AsterixDBConnection({
 });
 
 asterface.controller('AsterfaceCtrl', function($scope, $http){
+
+  $scope.itemsPerPage = 30;
+  $scope.page = 1;
+  $scope.currentDataverse = false;
+  $scope.currentDataset = false;
+  loadDatabase();
+
   function loadDatabase()
   {
     // Load dataverses
     var query = new FLWOGRExpression()
       .ForClause("$dv", new AExpression("dataset Dataverse"))
-      .ReturnClause("$dv.DataverseName");
+      .ReturnClause("$dv");
     
     runQuery(query.val(), function(json){
-      $scope.dataverses = [];
+      $scope.dataverses = {};
       angular.forEach(json, function(row){
-        $scope.dataverses.push(row);
+        $scope.dataverses[row.DataverseName] = row;
       });
     });
   }
@@ -30,21 +37,23 @@ asterface.controller('AsterfaceCtrl', function($scope, $http){
     });
   }
   
-  loadDatabase();
-  
 	$scope.loadDataverse = function()
 	{
 	  var dv = $scope.currentDataverse;
-	  $scope.datasets = [];
+	  $scope.datasets = {};
 	  var query = new FLWOGRExpression()
 	    .ForClause("$ds", new AExpression("dataset Dataset"))
 	    .WhereClause(new AExpression("$ds.DataverseName=\"" + dv + "\""))
-	    .ReturnClause("$ds.DatasetName");
+	    .ReturnClause("$ds");
 	    
     runQuery(query.val(), function(json){
       angular.forEach(json, function(ds){
-        $scope.datasets.push(ds);
+        $scope.datasets[ds.DatasetName] = ds;
       });
+
+      $scope.currentDataset = false;
+      $scope.records = [];
+      
     });
 	};
 	
@@ -58,6 +67,7 @@ asterface.controller('AsterfaceCtrl', function($scope, $http){
       
     runQuery(query.val(), function(json){
       $scope.records = [];
+
       angular.forEach(json, function(row){
         $scope.records.push(row);
       });
@@ -108,9 +118,10 @@ asterface.controller('AsterfaceCtrl', function($scope, $http){
         html += '</div>';
         return html;
       }
-      else if(val.hasOwnProperty('int32'))
+      // Integer
+      else if(extractInt(val) !== false)
       {
-        return '<span class="number">' + val['int32'] + '</span>';
+        return '<span class="number">' + extractInt(val) + '</span>';
       }
       else
       {
@@ -130,11 +141,55 @@ asterface.controller('AsterfaceCtrl', function($scope, $http){
     {
       return val;    
     }
-
   }
   
-  $scope.itemsPerPage = 30;
-  $scope.page = 1;
+  $scope.deleteRecord = function(rid)
+  {
+    var pk = $scope.datasets[$scope.currentDataset].InternalDetails.PrimaryKey.orderedlist;
+    var record = $scope.records[rid];
+    var comps = [];
+    for(var k in pk)
+    {
+      var key = pk[k];
+      var val = false;
+      
+      // support integers
+      if(extractInt(record[key]) !== false) val = extractInt(record[key]);
+      else if(typeof record[key] == "string") val = '"' + record[key] + '"';
+      else alert("Unknown value (" + key + "): " + record[key]);
+      
+      if(val === false){ return }
+      
+      comps.push(new AExpression("$r." + key + "=" + val));
+    }
+    
+    var where = new WhereClause();
+    where.and(comps);
+    
+    var delStmt = new DeleteStatement("$r", $scope.currentDataverse + "." + $scope.currentDataset, where);
+    alert(delStmt.val());
+    A.update(delStmt.val(), function(){ $scope.$apply(function(){ $scope.loadDataset(); })});
+    
+  }
+  
+  $scope.insertRecord = function()
+  {
+    var ins = new InsertStatement($scope.currentDataverse + "." + $scope.currentDataset,
+      {
+        id: $scope.records.length,
+        name: "Haha"
+      });
+    A.update(ins.val(), function(){ $scope.$apply(function(){ $scope.loadDataset(); })});
+  }
+  
+  function extractInt(obj)
+  {
+    if(typeof obj !== "object") return false;
+    if(obj.hasOwnProperty("int32")) return obj["int32"];
+    if(obj.hasOwnProperty("int16")) return obj["int16"];
+    if(obj.hasOwnProperty("int8")) return obj["int8"];
+    return false;
+  }
 });
 
 

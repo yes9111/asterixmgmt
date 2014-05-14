@@ -57,6 +57,11 @@ body div.browser-box div.record div.value
 {
 }
 
+body div.browser-box div.record div.record-control-bar
+{
+  float:right;
+}
+
 /* UNORDERED LIST */
 body div.browser-box div.unorderedlist
 {
