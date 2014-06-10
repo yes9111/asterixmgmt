@@ -3,12 +3,26 @@ var A = new AsterixDBConnection({
   dataverse: "Metadata"
 });
 
-asterface.controller('AsterfaceCtrl', function($scope, $http){
-
-  $scope.itemsPerPage = 30;
-  $scope.page = 1;
-  $scope.currentDataverse = false;
-  $scope.currentDataset = false;
+asterface.controller('Ctrl', function($scope, $http){
+  $scope.browsing = { 
+    dataverse: false, 
+    dataset: false,
+    paging: {
+      itemsPerPage: 30,
+      page: 1
+    },
+    action: "browse",
+    showInsertForm: false,
+  };
+  
+  $scope.dataTypeForm = {
+    name: "",
+    fields: []
+  };
+  
+  $scope.data = {};
+  $scope.insert = {};
+  
   loadDatabase();
 
   function loadDatabase()
@@ -19,9 +33,9 @@ asterface.controller('AsterfaceCtrl', function($scope, $http){
       .ReturnClause("$dv");
     
     runQuery(query.val(), function(json){
-      $scope.dataverses = {};
+      $scope.data.dataverses = {};
       angular.forEach(json, function(row){
-        $scope.dataverses[row.DataverseName] = row;
+        $scope.data.dataverses[row.DataverseName] = row;
       });
     });
   }
@@ -39,8 +53,9 @@ asterface.controller('AsterfaceCtrl', function($scope, $http){
   
 	$scope.loadDataverse = function()
 	{
-	  var dv = $scope.currentDataverse;
-	  $scope.datasets = {};
+	  var dv = $scope.browsing.dataverse;
+	  $scope.data.datasets = {};
+	  $scope.data.datatypes = {};
 	  var query = new FLWOGRExpression()
 	    .ForClause("$ds", new AExpression("dataset Dataset"))
 	    .WhereClause(new AExpression("$ds.DataverseName=\"" + dv + "\""))
@@ -48,46 +63,60 @@ asterface.controller('AsterfaceCtrl', function($scope, $http){
 	    
     runQuery(query.val(), function(json){
       angular.forEach(json, function(ds){
-        $scope.datasets[ds.DatasetName] = ds;
+        $scope.data.datasets[ds.DatasetName] = ds;
       });
 
-      $scope.currentDataset = false;
-      $scope.records = [];
-      
+      $scope.browsing.dataset = false;
+      $scope.data.records = [];
+    });
+    
+    var typesQuery = new FLWOGRExpression()
+      .ForClause("$dt", new AExpression("dataset Metadata.Datatype"))
+      .WhereClause(new AExpression("$dt.DataverseName=\"" + dv + "\""))
+      .ReturnClause("$dt");
+    
+    runQuery(typesQuery.val(), function(json){
+      angular.forEach(json, function(dt){
+        $scope.data.datatypes[dt.DatatypeName] = dt;
+      });
     });
 	};
 	
 	$scope.loadDataset = function()
   {
-    if(!$scope.currentDataverse || !$scope.currentDataset) return;
+    if(!$scope.browsing.dataverse || !$scope.browsing.dataset) return;
     var query = new FLWOGRExpression()
-      .ForClause("$d", new AExpression("dataset " + $scope.currentDataverse + "." + $scope.currentDataset))
-      .LimitClause(new AExpression($scope.itemsPerPage + " offset " + ($scope.page-1)*$scope.itemsPerPage))
+      .ForClause("$d", new AExpression("dataset " + getQuantifiedLocation()))
+      .LimitClause(new AExpression($scope.browsing.paging.itemsPerPage + " offset " + ($scope.browsing.paging.page-1)*$scope.browsing.paging.itemsPerPage))
       .ReturnClause("$d");
-      
+
+
     runQuery(query.val(), function(json){
-      $scope.records = [];
+      $scope.data.records = [];
 
       angular.forEach(json, function(row){
-        $scope.records.push(row);
+        $scope.data.records.push(row);
       });
+      
+      $scope.loadInsertForm();
+      $scope.browsing.action = "browse";
     });
   };
   
   $scope.loadQuery = function()
   {
-    if(!$scope.currentDataverse){
+    if(!$scope.browsing.dataverse){
       alert("You need to select a dataverse!");
       return; // requires dataverse to be selected
     }
     
-    runQuery($scope.query, function(json){
-      $scope.records = [];
+    runQuery($scope.browsing.query, function(json){
+      $scope.data.records = [];
       angular.forEach(json, function(row){
-        $scope.records.push(row);
+        $scope.data.records.push(row);
       });
     });
-  }
+  };
   
   $scope.printValue = function(val)
   {
@@ -141,12 +170,12 @@ asterface.controller('AsterfaceCtrl', function($scope, $http){
     {
       return val;    
     }
-  }
+  };
   
   $scope.deleteRecord = function(rid)
   {
-    var pk = $scope.datasets[$scope.currentDataset].InternalDetails.PrimaryKey.orderedlist;
-    var record = $scope.records[rid];
+    var pk = $scope.data.datasets[$scope.browsing.dataset].InternalDetails.PrimaryKey.orderedlist;
+    var record = $scope.data.records[rid];
     var comps = [];
     for(var k in pk)
     {
@@ -166,20 +195,74 @@ asterface.controller('AsterfaceCtrl', function($scope, $http){
     var where = new WhereClause();
     where.and(comps);
     
-    var delStmt = new DeleteStatement("$r", $scope.currentDataverse + "." + $scope.currentDataset, where);
-    alert(delStmt.val());
-    A.update(delStmt.val(), function(){ $scope.$apply(function(){ $scope.loadDataset(); })});
+    var delStmt = new DeleteStatement("$r", getQuantifiedLocation(), where);
+    A.update(delStmt.val(), refreshRecords);
+  };
+  
+  $scope.loadInsertForm = function()
+  {
+    // read current dataset type
+//    var searchStmt = new FLWOGRExpression().ForClause("$f", new AExpression("dataset Metadata.Datatype")).WhereClause("$f.Dataset
+    var typeName = $scope.data.datasets[$scope.browsing.dataset].DataTypeName;
+    var getTypeStmt = new FLWOGRExpression().ForClause("$f", new AExpression("dataset Metadata.Datatype"))
+      .WhereClause().and(
+        new AExpression("$f.DatatypeName=\"" + typeName + "\""), 
+        new AExpression("$f.DataverseName=\"" + $scope.browsing.dataverse + "\""))
+      .ReturnClause("$f");
+
+    runQuery(getTypeStmt.val(), function(json){
+      var type = json[0];
+
+      $scope.insert.isOpen = type.Derived.Record.IsOpen;
+      $scope.insert.fields = type.Derived.Record.Fields.orderedlist;      
+    });
+  };
+  
+  $scope.dataTypeForm.addField = function()
+  {
+    $scope.dataTypeForm.fields.push({
+      name: $scope.dataTypeForm.newFieldName,
+      type: $scope.dataTypeForm.newFieldType
+    });
+  };
     
+  $scope.insert.update = function()
+  {
+    var record = {};
+    
+    $(".insert-field").each(function(box){
+      var field = $(this);
+      var fieldType = field.attr("fieldtype");
+      
+      switch(fieldType)
+      {
+      case "int8": case "int16": case "int32": case "int64":
+        record[ field.attr("name") ] = new AExpression( field.val() );
+        break;
+        
+      case "string":
+        record[ field.attr("name") ] = field.val();
+        break;
+      default:
+        alert("Unknown field type.");
+        return;
+      }
+
+    });
+    
+    var insStmt = new InsertStatement(getQuantifiedLocation(), record);
+    A.update(insStmt.val(), refreshRecords);
   }
   
-  $scope.insertRecord = function()
+  
+  function refreshRecords()
   {
-    var ins = new InsertStatement($scope.currentDataverse + "." + $scope.currentDataset,
-      {
-        id: $scope.records.length,
-        name: "Haha"
-      });
-    A.update(ins.val(), function(){ $scope.$apply(function(){ $scope.loadDataset(); })});
+    $scope.$apply($scope.loadDataset);
+  }
+  
+  function getQuantifiedLocation()
+  {
+    return $scope.browsing.dataverse + "." + $scope.browsing.dataset;
   }
   
   function extractInt(obj)
@@ -190,6 +273,22 @@ asterface.controller('AsterfaceCtrl', function($scope, $http){
     if(obj.hasOwnProperty("int8")) return obj["int8"];
     return false;
   }
+  
+  function extractShape(obj)
+  {
+    if(typeof obj !== "object") return false;
+    return false;
+  }
+  
+  $scope.toggleForm = function()
+  {
+    $scope.browsing.showInsertForm = !$scope.browsing.showInsertForm;
+  }
+  
+  $scope.createDataset = function()
+  {
+    alert($scope.newdatasetname);
+  };
 });
 
 

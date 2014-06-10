@@ -5,61 +5,116 @@
     <script type="text/javascript" src="/static/js/asterix-sdk-stable.js"></script>
     <script type="text/javascript" src="/static/js/angular.js"></script>
     <script type="text/javascript" src="/static/js/angular-sanitize.js"></script>
-    <script type="text/javascript" src="/static/js/asterix-parser.js"></script>
     <script type="text/javascript" src="/static/js/asterix-manager.js"></script>
     <link rel="stylesheet" href="/static/css/manager.css">
     <title>Asterix Manager</title>
   </head>
-  <body ng-controller="AsterfaceCtrl">
+  <body ng-controller="Ctrl">
     <div class="header">
       <h1>Asterix Console</h1>
     </div>
     
     <div class="browser-bar">
       <label for="dataverse-selector">Dataverse</label>
-	    <select name="dataverse-selector" ng-model="currentDataverse" ng-change="loadDataverse()">
-		    <option ng-repeat="dv in dataverses" value="{{dv.DataverseName}}">
+	    <select name="dataverse-selector" ng-model="browsing.dataverse" ng-change="loadDataverse()">
+		    <option ng-repeat="dv in data.dataverses" value="{{dv.DataverseName}}">
 			    {{dv.DataverseName}}
 		    </option>
 	    </select>
       
       <label for="dataset-selector">Dataset</label>
-      <select name="dataset-selector" ng-model="currentDataset" ng-change="loadDataset()">
-        <option ng-repeat="ds in datasets" value="{{ds.DatasetName}}">
+      <select name="dataset-selector" ng-model="browsing.dataset" ng-change="loadDataset()">
+        <option ng-repeat="ds in data.datasets" value="{{ds.DatasetName}}">
           {{ds.DatasetName}}
         </option>
       </select>
       
+
+      
       <label for="ipp">Records Per Page</label>
-      <input type="number" name="numdata-selector" ng-model="itemsPerPage" ng-change="loadDataset()">
+      <input type="number" name="numdata-selector" ng-model="browsing.paging.itemsPerPage" ng-change="loadDataset()">
       
       <label for="page">Page</label>
-      <input type="number" name="page" ng-model="page" ng-change="loadDataset()">
+      <input type="number" name="page" ng-model="browsing.paging.page" ng-change="loadDataset()">
       
       <div class="query-box" ng-submit="loadQuery()">
         <form>
-        <input type="text" ng-model="query">
+        <input type="text" ng-model="browsing.query">
         <input type="submit" value="Query!">
         </form>
       </div>
+      <button ng-click="browsing.action='createDataset'">New Dataset</button>
+      <button ng-click="browsing.action='createDatatype'">New Datatype</button>
     </div>
+    <div id="content-box" ng-switch="browsing.action">
     
-    <div class="browser-box">
-      <div class="dataset-control-bar" ng-if="currentDataset">
-        <button ng-click="insertRecord()">Insert Record</button>
-      </div>
-      <div ng-repeat="r in records" class="record">
-        <!-- Options to control the record options -->
-        <div class="record-control-bar">
-          <button ng-click="deleteRecord($index)">X</button>
+      <div class="browser-box" ng-switch-default>
+        <div class="dataset-control-bar" ng-if="browsing.dataset">
+          <button ng-click="toggleForm()">Show/Hide Form</button>
+          <div id="insert-box" ng-if="browsing.showInsertForm">
+            <div ng-repeat="field in insert.fields">
+              <label>{{ field.FieldName }} ({{field.FieldType}})</label>
+              <input class="insert-field" fieldtype="{{field.FieldType}}" name="{{field.FieldName}}">
+            </div>
+          <button ng-click="insert.update()">Insert</button>
+          </div>        
         </div>
         
-        <div ng-repeat="(k, v) in r" class="datum">
-          <div class="field">{{ k }} </div>
-          <div class="value" ng-bind-html="printValue(v)"></div>
+        <div ng-repeat="r in data.records" class="record">
+          <!-- Options to control the record options -->
+          <div class="record-control-bar">
+            <button ng-click="deleteRecord($index)">X</button>
+          </div>
+          
+          <div ng-repeat="(k, v) in r" class="datum">
+            <div class="field">{{ k }} </div>
+            <div class="value" ng-bind-html="printValue(v)"></div>
+          </div>
+        </div>    <!-- End of Records --> 
+      </div> <!-- End of browser box -->
+     
+
+      <div ng-switch-when="createDataset">
+        <div ng-if="browsing.dataverse">
+          <h1>Creating New Dataset</h1>
+          <input ng-model="datasetForm.name"><br>
+          Base Type: 
+          <select ng-model="datasetForm.type">
+            <option ng-repeat="type in data.datatypes" value="{{type.DatatypeName}}">
+              {{type.DatatypeName}}
+            </option>
+          </select>
+          <input type="button" ng-click="createDataset()" value="Create">
+        </div>      
+      </div>
+      
+      <div ng-switch-when="createDatatype">
+        <div ng-if="browsing.dataverse">
+          <h1>Creating New Datatype</h1>
+          <form>
+            <label>DataType Name</label><input ng-model="dataTypeForm.name">
+            <label>Open Datatype?</label><input type="checkbox" ng-model="dataTypeForm.isOpen">
+            <div ng-repeat="f in dataTypeForm.fields">
+              <label>{{f.name}} ({{f.type}})</label>
+              <input name="{{ f.name }}" value="{{ f.value }}">
+            </div>
+          </form>
+          <input ng-model="dataTypeForm.newFieldName" type="text">
+          <select ng-model="dataTypeForm.newFieldType">
+            <option value="string">String</option>
+            <option value="int8">Int8</option>
+            <option value="int16">Int16</option>
+            <option value="int32">Int32</option>
+            <option value="int64">Int64</option>
+            <option value="Record">Record</option>
+            <option value="Unordered List">Unordered List</option>
+            <option value="Ordered List">Ordered List</option>
+          </select>
+          <input type="button" value="Add" ng-click="dataTypeForm.addField()">
         </div>
       </div>
-    </div>
+    </div> <!-- End of content box -->
+    
 
   </body>
 </html>
