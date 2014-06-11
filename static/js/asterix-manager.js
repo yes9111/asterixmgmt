@@ -3,7 +3,7 @@ var A = new AsterixDBConnection({
   dataverse: "Metadata"
 });
 
-
+var helper = new AHelper();
 
 asterface.controller(controllers);
 
@@ -12,6 +12,10 @@ asterface.config(['$routeProvider',
     $routeProvider.when('/browse', {
       templateUrl: '/static/partials/browser.html',
       controller: 'BrowseController'
+    }).
+    when('/row/:rid', {
+      templateUrl: '/static/partials/viewrow.html',
+      controller: 'RowController'
     }).
     when('/newdataset', {
       templateUrl: '/static/partials/datasetform.html',

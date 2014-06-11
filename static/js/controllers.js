@@ -1,18 +1,20 @@
 var controllers = {};
 
-controllers.BrowseController = function($scope){
+controllers.BrowseController = function($scope, $location){
+  $scope.insert.extraFields = [];
+  
   $scope.insert.update = function()
   {
     var record = {};
     
-    $(".insert-field").each(function(box){
+    $(".insert-field, .insert-field-extra").each(function(box){
       var field = $(this);
       var fieldType = field.attr("fieldtype");
       
       switch(fieldType)
       {
-      case "int8": case "int16": case "int32": case "int64":
-        record[ field.attr("name") ] = new AExpression( field.val() );
+      case "int8": case "int16": case "int32": case "int64": case "float": case "double":
+        record[ field.attr("name") ] = new AExpression( fieldType + "(\"" + field.val() + "\")");
         break;
         
       case "string":
@@ -26,8 +28,16 @@ controllers.BrowseController = function($scope){
     });
     
     var insStmt = new InsertStatement($scope.getQualifiedLocation(), record);
+    alert(insStmt.val());
     A.update(insStmt.val(), $scope.refreshRecords);
   };
+  
+  $scope.insert.addField = function(){
+    $scope.insert.extraFields.push({
+      FieldName: $scope.insert.newField.Name,
+      FieldType: $scope.insert.newField.Type
+    });
+  };  
   
   $scope.deleteRecord = function(rid)
   {
@@ -40,7 +50,7 @@ controllers.BrowseController = function($scope){
       var val = false;
       
       // support integers
-      if(parser.extractInt(record[key]) !== false) val = parser.extractInt(record[key]);
+      if(helper.extractNumber(record[key]) !== false) val = helper.extractNumber(record[key]);
       else if(typeof record[key] == "string") val = '"' + record[key] + '"';
       else alert("Unknown value (" + key + "): " + record[key]);
       
@@ -56,12 +66,40 @@ controllers.BrowseController = function($scope){
     A.update(delStmt.val(), $scope.refreshRecords);
   };
   
-  $scope.toggleForm = function()
-  {
+  $scope.magnifyRecord = function (rid){
+    $location.path('/row/' + rid);
+  };
+  
+  $scope.toggleForm = function() {
     $scope.browsing.showInsertForm = !$scope.browsing.showInsertForm;
   };
   
+  $scope.getExtraFields = function(fields, exclude){
+    var result = {}
+    for(var field in fields){
+      if(fields.hasOwnProperty(field)){
+        result[field] = true;
+      }
+    }
+    
+    for(var i in exclude) {
+      delete result[exclude[i].FieldName];
+    }
+    
+    return result;
+  };
   
+  
+  $scope.browsing.printValue = function(v){
+    if(angular.isString(v)) return v;
+    if(helper.extractNumber(v) !== false) return helper.extractNumber(v);
+    else  return "Undefined presenter";
+  }
+  
+};
+
+controllers.RowController = function($scope, $routeParams){
+  $scope.rowId = $routeParams.rid;
 };
 
 controllers.NewDatasetController = function($scope){
@@ -84,7 +122,8 @@ controllers.NewDatasetController = function($scope){
 controllers.NewDatatypeController = function($scope){
   $scope.dataTypeForm = {
     name: "",
-    fields: []
+    fields: [],
+    newFieldOptional: false
   };
 
   $scope.createDatatype = function()
@@ -98,7 +137,7 @@ controllers.NewDatatypeController = function($scope){
     for(var key in $scope.dataTypeForm.fields)
     {
       var field = $scope.dataTypeForm.fields[key];
-      fields.push(field['name'] + ' : ' + field.type);
+      fields.push(field['name'] + ' : ' + field.type + (field.isOptional? "?": ""));
     }
     
     query += fields.join(',') + '}';
@@ -112,9 +151,15 @@ controllers.NewDatatypeController = function($scope){
   {
     $scope.dataTypeForm.fields.push({
       name: $scope.dataTypeForm.newFieldName,
-      type: $scope.dataTypeForm.newFieldType
+      type: $scope.dataTypeForm.newFieldType,
+      isOptional: $scope.dataTypeForm.newFieldOptional
     });
   };
+  
+  $scope.dataTypeForm.removeField = function(index)
+  {
+    $scope.dataTypeForm.fields.splice(index, 1);
+  }
   
 };
 
@@ -131,6 +176,7 @@ controllers.BaseController = function($scope, $http, $location){
   
   $scope.data = {};
   $scope.insert = {};
+  $scope.types = 
   
   loadDatabase();
 
@@ -141,18 +187,18 @@ controllers.BaseController = function($scope, $http, $location){
       .ForClause("$dv", new AExpression("dataset Dataverse"))
       .ReturnClause("$dv");
     
-    runQuery(query.val(), function(json){
+    runQuery('Metadata', query.val(), function(json){
       $scope.data.dataverses = {};
       angular.forEach(json, function(row){
         $scope.data.dataverses[row.DataverseName] = row;
       });
     });
-  }
+  };
   
   
-  function runQuery(query, func)
+  function runQuery(dataverse, query, func)
   {
-    A.query(query, function(txt){
+    A.dataverse(dataverse).query(query, function(txt){
       $scope.$apply(function(){
         var json = eval('([' + txt.results + '])');
         func(json);
@@ -169,40 +215,47 @@ controllers.BaseController = function($scope, $http, $location){
 	    .ForClause("$ds", new AExpression("dataset Dataset"))
 	    .WhereClause(new AExpression("$ds.DataverseName=\"" + dv + "\""))
 	    .ReturnClause("$ds");
-	    
-    runQuery(query.val(), function(json){
-      angular.forEach(json, function(ds){
-        $scope.data.datasets[ds.DatasetName] = ds;
-      });
+	  
+	  runQuery('Metadata', query.val(), function(json){
+	    angular.forEach(json, function(ds){
+	      $scope.data.datasets[ds.DatasetName] = ds;
+	    });
+	    $scope.browsing.dataset = false;
+	    $scope.data.records = [];
+	  });
 
-      $scope.browsing.dataset = false;
-      $scope.data.records = [];
-    });
-    
     var typesQuery = new FLWOGRExpression()
-      .ForClause("$dt", new AExpression("dataset Metadata.Datatype"))
+      .ForClause("$dt", new AExpression("dataset Datatype"))
       .WhereClause(new AExpression("$dt.DataverseName=\"" + dv + "\""))
       .ReturnClause("$dt");
     
-    runQuery(typesQuery.val(), function(json){
+    runQuery('Metadata', typesQuery.val(), function(json){
       angular.forEach(json, function(dt){
         $scope.data.datatypes[dt.DatatypeName] = dt;
       });
     });
 	};
 	
-	$scope.loadDataset = function()
-  {
+	$scope.loadDataset = function() {
     if(!$scope.browsing.dataverse || !$scope.browsing.dataset) return;
     var query = new FLWOGRExpression()
       .ForClause("$d", new AExpression("dataset " + $scope.getQualifiedLocation()))
       .LimitClause(new AExpression($scope.browsing.paging.itemsPerPage + " offset " + ($scope.browsing.paging.page-1)*$scope.browsing.paging.itemsPerPage))
       .ReturnClause("$d");
 
+    // fill up simpleFields.      
+    var datatype = $scope.data.datasets[$scope.browsing.dataset].DataTypeName;
+    var simpleFields = $scope.data.datatypes[datatype].Derived.Record.Fields.orderedlist;
 
-    runQuery(query.val(), function(json){
+    $scope.browsing.simpleFields = [];
+    for(var i in simpleFields) {
+      if(helper.simpleTypes.hasOwnProperty(simpleFields[i].FieldType)){
+        $scope.browsing.simpleFields.push(simpleFields[i]);
+      }
+    }
+
+    runQuery($scope.browsing.dataverse, query.val(), function(json){
       $scope.data.records = [];
-
       angular.forEach(json, function(row){
         $scope.data.records.push(row);
       });
@@ -219,7 +272,7 @@ controllers.BaseController = function($scope, $http, $location){
       return; // requires dataverse to be selected
     }
     
-    runQuery($scope.browsing.query, function(json){
+    runQuery($scope.browsing.dataverse, $scope.browsing.query, function(json){
       $scope.data.records = [];
       angular.forEach(json, function(row){
         $scope.data.records.push(row);
@@ -227,77 +280,13 @@ controllers.BaseController = function($scope, $http, $location){
     });
   };
   
-  $scope.printValue = function(val)
-  {
-
-    if(angular.isObject(val))
-    {
-      if(val.hasOwnProperty('unorderedlist'))
-      {
-        var html = '<div class="unorderedlist">';
-        for(var k in val.unorderedlist)
-        {
-          html += '<div class="datum">';
-          html += $scope.printValue(val.unorderedlist[k]);
-          html += '</div>';
-        }
-        html += '</div>';
-        return html;
-      }
-      else if(val.hasOwnProperty('orderedlist'))
-      {
-        var html = '<div class="orderedlist">';
-        for(var k in val.orderedlist)
-        {
-          html += '<div class="datum">';
-          html += $scope.printValue(val.orderedlist[k]);
-          html += '</div>';
-        }
-        html += '</div>';
-        return html;
-      }
-      // Integer
-      else if(parser.extractInt(val) !== false)
-      {
-        return '<span class="number">' + parser.extractInt(val) + '</span>';
-      }
-      else
-      {
-        var html = '<div class="record">';
-        for(var k in val)
-        {
-          html += '<div class="datum">';
-          html += '<div class="field">' + k + '</div>';
-          html += '<div class="value">' + $scope.printValue(val[k]) + '</div>';
-          html += '</div>';
-        }
-        html += '</div>';
-        return html;
-      }
-    }
-    else
-    {
-      return val;    
-    }
-  };
-  
   $scope.loadInsertForm = function()
   {
-    // read current dataset type
-//    var searchStmt = new FLWOGRExpression().ForClause("$f", new AExpression("dataset Metadata.Datatype")).WhereClause("$f.Dataset
     var typeName = $scope.data.datasets[$scope.browsing.dataset].DataTypeName;
-    var getTypeStmt = new FLWOGRExpression().ForClause("$f", new AExpression("dataset Metadata.Datatype"))
-      .WhereClause().and(
-        new AExpression("$f.DatatypeName=\"" + typeName + "\""), 
-        new AExpression("$f.DataverseName=\"" + $scope.browsing.dataverse + "\""))
-      .ReturnClause("$f");
+    var type = $scope.data.datatypes[typeName];
 
-    runQuery(getTypeStmt.val(), function(json){
-      var type = json[0];
-
-      $scope.insert.isOpen = type.Derived.Record.IsOpen;
-      $scope.insert.fields = type.Derived.Record.Fields.orderedlist;      
-    });
+    $scope.insert.isOpen = type.Derived.Record.IsOpen;
+    $scope.insert.fields = type.Derived.Record.Fields.orderedlist;      
   };
   
   $scope.refreshRecords = function()

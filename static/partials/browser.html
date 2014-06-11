@@ -1,35 +1,76 @@
-<script type="text/ng-template" id="asterix-renderer">
-  
-</script>  
-    
 <label for="ipp">Records Per Page</label>
 <input type="number" name="numdata-selector" ng-model="browsing.paging.itemsPerPage" ng-change="loadDataset()">
 
 <label for="page">Page</label>
 <input type="number" name="page" ng-model="browsing.paging.page" ng-change="loadDataset()">
 
-<div class="browser-box">
-  <div class="dataset-control-bar" ng-if="browsing.dataset">
+<div class="browser-box" ng-if="browsing.dataset">
+  <div class="dataset-control-bar" >
     <button ng-click="toggleForm()">Show/Hide Form</button>
     <div id="insert-box" ng-if="browsing.showInsertForm">
       <div ng-repeat="field in insert.fields">
         <label>{{ field.FieldName }} ({{field.FieldType}})</label>
         <input class="insert-field" fieldtype="{{field.FieldType}}" name="{{field.FieldName}}">
       </div>
+
+      <div ng-if="insert.isOpen">
+        <hr>
+        <div ng-repeat="field in insert.extraFields">
+          <label>{{ field.FieldName }} ({{field.FieldType}})</label>
+          <input class="insert-field-extra" fieldtype="{{field.FieldType}}" name="{{field.FieldName}}">
+        </div>
+        
+        <form ng-submit="insert.addField()">
+          <fieldset>
+            <legend>New Field</legend>
+            <label>Field Name:</label> <input ng-model="insert.newField.Name" type="text">
+            <label>Field Type:</label>
+            <select ng-model="insert.newField.Type">
+              <option value="string">String</option>
+              <option value="int8">Int8</option>
+              <option value="int16">Int16</option>
+              <option value="int32">Int32</option>
+              <option value="int64">Int64</option>
+              <option value="float">Float</option>
+              <option value="double">Double</option>
+              <option value="point">Point</option>
+              <option value="line">Line</option>
+              <option value="circle">Circle</option>
+              <option value="polygon">Polygon</option>
+              <option value="date">Date</option>
+              <option value="time">Time</option>
+              <option value="datetime">Date/Time</option>
+              <option value="interval">Interval</option>
+              <option value="record">Record</option>
+              <option value="unorderedList">Unordered List</option>
+              <option value="orderedList">Ordered List</option>
+            </select>
+            <button type="submit" value="Add Field">Add Extra Field</button>
+          </fieldset>  
+        </form>
+      </div>
     <button ng-click="insert.update()">Insert</button>
     </div>        
   </div>
   
   <!-- WORK ON A TABULAR VIEW -->
-  <div ng-repeat="r in data.records" class="record">
-    <!-- Options to control the record options -->
-    <div class="record-control-bar">
-      <button ng-click="deleteRecord($index)">X</button>
-    </div>
-    
-    <div ng-repeat="(k, v) in r" class="datum">
-      <div class="field">{{ k }} </div>
-      <div class="value" ng-bind-html="printValue(v)"></div>
-    </div>
-  </div>    <!-- End of Records --> 
+  <table>
+    <tr>
+      <th>Actions</th>
+      <th ng-repeat="field in browsing.simpleFields">
+        {{ field.FieldName }} ({{field.FieldType}})
+      </th>
+      <th ng-if="insert.isOpen">Extra</th>
+    </tr>
+    <tr ng-repeat="r in data.records" class="record">
+      <!-- Options to control the record options -->
+      <td class="record-control-bar">
+        <button ng-click="deleteRecord($index)">X</button>
+        <button ng-click="magnifyRecord($index)">*</button>
+      </td>
+      
+      <td ng-repeat="field in browsing.simpleFields">
+        {{ browsing.printValue(r[field.FieldName]) }}
+      </td>
+    </tr>    <!-- End of Records --> 
 </div> <!-- End of browser box -->
