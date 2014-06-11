@@ -1,0 +1,28 @@
+<div ng-show="browsing.dataverse">
+  <h1>Creating New Datatype</h1>
+  <form ng-submit="createDatatype()">
+    <label>DataType Name</label><input ng-model="dataTypeForm.name">
+    <label>Open Datatype?</label><input type="checkbox" ng-model="dataTypeForm.isOpen">
+    <div ng-repeat="f in dataTypeForm.fields">
+      <label>{{f.name}} ({{f.type}})</label>
+    </div>
+    <button type="submit">Create Datatype</button>
+  </form>
+
+  <fieldset>
+    <legend>New Field</legend>
+    <input ng-model="dataTypeForm.newFieldName" type="text">
+    <select ng-model="dataTypeForm.newFieldType">
+      <option value="string">String</option>
+      <option value="int8">Int8</option>
+      <option value="int16">Int16</option>
+      <option value="int32">Int32</option>
+      <option value="int64">Int64</option>
+      <option value="Record">Record</option>
+      <option value="Unordered List">Unordered List</option>
+      <option value="Ordered List">Ordered List</option>
+    </select>
+    <input type="button" value="Add Field" ng-click="dataTypeForm.addField()">
+  </fieldset>  
+</div>
+

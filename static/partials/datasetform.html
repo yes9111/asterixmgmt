@@ -1,0 +1,23 @@
+<div ng-show="browsing.dataverse">
+  <form ng-submit="createDataset()">
+    <h1>Creating New Dataset ({{browsing.dataverse}})</h1>
+    <input ng-model="datasetForm.name"><br>
+    Base Type: 
+    <select ng-model="datasetForm.type">
+      <option ng-repeat="type in data.datatypes" value="{{type.DatatypeName}}">
+        {{type.DatatypeName}}
+      </option>
+    </select>
+
+    <div ng-if="datasetForm.type">
+      <!-- PRIMARY KEY PICKER -->
+      <select ng-model="datasetForm.primarykey">
+        <option ng-repeat="pkfield in data.datatypes[datasetForm.type].Derived.Record.Fields.orderedlist"
+          value="{{pkfield.FieldName}}">{{pkfield.FieldName}}  ({{pkfield.FieldType}})</option>
+      </select>
+      
+    </div>
+    
+    <button type="submit">Create Dataset</button>
+  </form>
+</div>  

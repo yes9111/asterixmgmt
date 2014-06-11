@@ -1,0 +1,35 @@
+<script type="text/ng-template" id="asterix-renderer">
+  
+</script>  
+    
+<label for="ipp">Records Per Page</label>
+<input type="number" name="numdata-selector" ng-model="browsing.paging.itemsPerPage" ng-change="loadDataset()">
+
+<label for="page">Page</label>
+<input type="number" name="page" ng-model="browsing.paging.page" ng-change="loadDataset()">
+
+<div class="browser-box">
+  <div class="dataset-control-bar" ng-if="browsing.dataset">
+    <button ng-click="toggleForm()">Show/Hide Form</button>
+    <div id="insert-box" ng-if="browsing.showInsertForm">
+      <div ng-repeat="field in insert.fields">
+        <label>{{ field.FieldName }} ({{field.FieldType}})</label>
+        <input class="insert-field" fieldtype="{{field.FieldType}}" name="{{field.FieldName}}">
+      </div>
+    <button ng-click="insert.update()">Insert</button>
+    </div>        
+  </div>
+  
+  <!-- WORK ON A TABULAR VIEW -->
+  <div ng-repeat="r in data.records" class="record">
+    <!-- Options to control the record options -->
+    <div class="record-control-bar">
+      <button ng-click="deleteRecord($index)">X</button>
+    </div>
+    
+    <div ng-repeat="(k, v) in r" class="datum">
+      <div class="field">{{ k }} </div>
+      <div class="value" ng-bind-html="printValue(v)"></div>
+    </div>
+  </div>    <!-- End of Records --> 
+</div> <!-- End of browser box -->

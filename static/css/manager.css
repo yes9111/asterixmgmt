@@ -18,8 +18,8 @@ body div.header h1
 body div.browser-bar
 {
   background:navy;
-  padding:0.3em 0;
-  padding-left:1em;
+  padding:0.3em 1em;
+  padding-right:2em;
   color:white;
 }
 
@@ -33,9 +33,13 @@ body div.browser-bar select
   margin-right:1em;
 }
 
-body div.browser-box
+body div#content-box
 {
   padding:0 0.7em;
+}
+
+body div.browser-bar div.query-box{
+  float:right;
 }
 
 /* RECORD STYLES */
