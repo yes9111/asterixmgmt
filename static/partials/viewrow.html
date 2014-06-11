@@ -1,1 +1,8 @@
-{{rowId}}
+<div ng-if="data.records.length" class="browser-box">
+  <table>
+    <tr ng-repeat="(field, value) in data.records[rowId]">
+      <td class="field-name">{{field}}</td>
+      <td ng-bind-html="printRowDetail(value)"></td>
+    </tr>
+  </table>
+</div>

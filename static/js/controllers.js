@@ -95,11 +95,58 @@ controllers.BrowseController = function($scope, $location){
     if(helper.extractNumber(v) !== false) return helper.extractNumber(v);
     else  return "Undefined presenter";
   }
-  
 };
 
 controllers.RowController = function($scope, $routeParams){
   $scope.rowId = $routeParams.rid;
+  
+  $scope.printRowDetail = function(val)
+  {
+
+    if(angular.isObject(val))
+    {
+      if(val.hasOwnProperty('unorderedlist'))
+      {
+        var html = '<div class="unorderedlist">';
+        for(var k in val.unorderedlist)
+        {
+          html += '<div class="datum">';
+          html += $scope.printRowDetail(val.unorderedlist[k]);
+          html += '</div>';
+        }
+        html += '</div>';
+        return html;
+      }
+      else if(val.hasOwnProperty('orderedlist')){
+        var html = '<div class="orderedlist">';
+        for(var k in val.orderedlist) {
+          html += '<div class="datum">';
+          html += $scope.printRowDetail(val.orderedlist[k]);
+          html += '</div>';
+        }
+        html += '</div>';
+        return html;
+      }
+      // Integer
+      else if(helper.extractNumber(val) !== false) {
+        return '<span class="number">' + extractNumber(val) + '</span>';
+      }
+      else {
+        var html = '<table class="record">';
+        for(var k in val) {
+          html += '<tr>';
+          html += '<td class="field-name">' + k + '</td>';
+          html += '<td class="field-value">' + $scope.printRowDetail(val[k]) + '</td>';
+          html += '</tr>';
+        }
+        html += '</table>';
+        return html;
+      }
+    }
+    else{
+      return val;    
+    }
+  };
 };
 
 controllers.NewDatasetController = function($scope){

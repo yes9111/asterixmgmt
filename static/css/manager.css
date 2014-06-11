@@ -51,17 +51,15 @@ body div.browser-box div.record
   margin-bottom:0.3em;  
 }
 
-body div.browser-box div.record div.field
+body div.browser-box td.field-name
 {
   color:blue;
   font-weight:bold;
+  vertical-align:top;
 }
 
-body div.browser-box div.record div.value
-{
-}
 
-body div.browser-box div.record div.record-control-bar
+body div.browser-box div.record-control-bar
 {
   float:right;
 }
