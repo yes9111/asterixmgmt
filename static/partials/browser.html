@@ -1,17 +1,21 @@
-<label for="ipp">Records Per Page</label>
-<input type="number" name="numdata-selector" ng-model="browsing.paging.itemsPerPage" ng-change="loadDataset()">
-
-<label for="page">Page</label>
-<input type="number" name="page" ng-model="browsing.paging.page" ng-change="loadDataset()">
-
 <div class="browser-box" ng-if="browsing.dataset">
+  <label for="ipp">Records Per Page</label>
+  <input type="number" name="numdata-selector" ng-model="browsing.paging.itemsPerPage" ng-change="loadDataset()">
+
+  <label for="page">Page</label>
+  <input type="number" name="page" ng-model="browsing.paging.page" ng-change="loadDataset()">
+  
   <div class="dataset-control-bar" >
     <button ng-click="toggleForm()">Show/Hide Insert Form</button>
     <div id="insert-box" ng-show="browsing.showInsertForm">
-      <div ng-repeat="field in insert.fields">
-        <label>{{ field.FieldName }} ({{field.FieldType}})</label>
-        <input class="insert-field" fieldtype="{{field.FieldType}}" name="{{field.FieldName}}">
-      </div>
+      <table>
+        <tr ng-repeat="field in insert.fields">
+          <td class="field-name">{{ field.FieldName }} ({{field.FieldType}})</td>
+          <td><input class="insert-field" fieldtype="{{field.FieldType}}" name="{{field.FieldName}}"></td>
+        </tr>
+      </table>
+  
+
 
       <div ng-if="insert.isOpen">
         <hr>
@@ -19,6 +23,10 @@
           <label>{{ field.FieldName }} ({{field.FieldType}})</label>
           <input class="insert-field-extra" fieldtype="{{field.FieldType}}" name="{{field.FieldName}}">
         </div>
+      </div>
+      <button ng-click="insert.update()">Insert</button>
+      
+      <div ng-if="insert.isOpen">
         
         <form ng-submit="insert.addField()">
           <fieldset>
@@ -49,7 +57,7 @@
           </fieldset>  
         </form>
       </div>
-    <button ng-click="insert.update()">Insert</button>
+
     </div>        
   </div>
   

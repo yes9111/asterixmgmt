@@ -51,16 +51,10 @@ body div.browser-bar div.query-box{
 
 /* RECORD STYLES */
 
-body div.browser-box div.record
-{
-  background:#E3E3E6;  
-  padding:0.1em 0.7em;
-  margin-bottom:0.3em;  
-}
-
 body div.browser-box td.field-name
 {
-  color:blue;
+  color:white;
+  background:black;
   font-weight:bold;
   vertical-align:top;
 }
@@ -71,24 +65,6 @@ body div.browser-box div.record-control-bar
   float:right;
 }
 
-/* UNORDERED LIST */
-body div.browser-box div.unorderedlist
-{
-  background:lightgreen; 
-  padding:0.1em 0.7em;
-  margin-bottom:0.3em;
-}
-
-
-
-
-/* ORDERED LIST */
-body div.browser-box div.orderedlist
-{
-  background:lightblue;
-  padding:0.1em 0.7em;
-  margin-bottom:0.3em;  
-}
 
 .query-box
 {
@@ -109,15 +85,43 @@ body div.browser-box div.orderedlist
 }
 
 /** collapsible **/
-.collapse-open{
-  background:darkgray;
+.collapse-open.orderedlist{
+  background:darkgreen;
 }
 
-.collapse-closed{
-  background:black;
+.collapse-closed.orderedlist{
+  background:lightgreen;
+}
+
+.collapse-open.unorderedlist{
+  background:darkblue;
+}
+
+.collapse-closed.unorderedlist{
+  background:lightblue;
+}
+
+.collapse-closed.record{
+  background:red;
+}
+
+.collapse-open.record{
+  background:darkred;
 }
 
 tr.record{
   margin-bottom:1em;
+}
+
+td, th{
+  border:1px solid black;
+  margin:0;
+  padding:0.3em;
+}
+
+th{
+  background:black;
+  color:white;
+  font-weight:bold;
 }
 

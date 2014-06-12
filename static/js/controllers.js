@@ -28,7 +28,6 @@ asterface.controller('BrowseController', function($scope, $location){
     });
     
     var insStmt = new InsertStatement($scope.getQualifiedLocation(), record);
-    alert(insStmt.val());
     A.update(insStmt.val(), $scope.refreshRecords);
   };
   
@@ -113,9 +112,11 @@ asterface.controller('NewDatasetController', function($scope){
     var query = 'create dataset ' + $scope.datasetForm['name'] + ' (' + $scope.datasetForm['type'] + ') primary key ';
     query += $scope.datasetForm.primarykey;
     
-    alert(query);
     A.dataverse($scope.browsing.dataverse).ddl(query, function(){
       alert("Successfully created dataset");
+      $scope.$apply(function(){
+        $scope.loadDataverse();
+      });
     });
   };
 });
@@ -298,7 +299,7 @@ asterface.controller('BaseController', function($scope, $http, $location){
     {
       if(val.hasOwnProperty('unorderedlist'))
       {
-        var html = '<div class="collapsible" id="c' + $scope.browsing.numCollapsible + '">';
+        var html = '<div class="collapsible unorderedlist" id="c' + $scope.browsing.numCollapsible + '">';
         html += 'Unordered List</div>';
         html += '<div class="unorderedlist" class="content">';
         for(var k in val.unorderedlist)
@@ -311,9 +312,9 @@ asterface.controller('BaseController', function($scope, $http, $location){
         return html;
       }
       else if(val.hasOwnProperty('orderedlist')){
-        var html = '<div class="collapsible" id="c' + $scope.browsing.numCollapsible + '">';
+        var html = '<div class="collapsible orderedlist" id="c' + $scope.browsing.numCollapsible + '">';
         html += 'Ordered List</div>';
-        html += '<div class="content" class="orderedlist">';
+        html += '<div class="content orderedlist">';
         for(var k in val.orderedlist) {
           html += '<div class="datum">';
           html += $scope.printRowDetail(val.orderedlist[k]);
@@ -323,7 +324,7 @@ asterface.controller('BaseController', function($scope, $http, $location){
         return html;
       }
       else {
-        var html='<div class="collapsible" id="c' + $scope.browsing.numCollapsible + '">';
+        var html='<div class="collapsible record" id="c' + $scope.browsing.numCollapsible + '">';
         html += 'Record</div>';
         html += '<div class="content">';
         html += '<table class="record">';
