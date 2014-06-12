@@ -82,6 +82,7 @@ body div.browser-box div.record-control-bar
   color:white;
   padding:3px;
   border-radius:4px;
+  cursor:pointer;
 }
 
 /** collapsible **/
@@ -104,6 +105,8 @@ body div.browser-box div.record-control-bar
 .collapse-closed.record{
   background:red;
 }
+
+
 
 .collapse-open.record{
   background:darkred;
