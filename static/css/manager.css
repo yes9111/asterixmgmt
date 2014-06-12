@@ -102,3 +102,22 @@ body div.browser-box div.orderedlist
   background:lightgray;
 }
 
+.collapsible{
+  color:white;
+  padding:3px;
+  border-radius:4px;
+}
+
+/** collapsible **/
+.collapse-open{
+  background:darkgray;
+}
+
+.collapse-closed{
+  background:black;
+}
+
+tr.record{
+  margin-bottom:1em;
+}
+

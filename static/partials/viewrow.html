@@ -1,20 +1,7 @@
 
 <div ng-if="data.records.length" class="browser-box">
   <button ng-click="back()">Return</button>
-  <table>
-    <tr ng-repeat="(field, value) in data.records[rowId]">
-      <td class="field-name">{{field}}</td>
-      <td ng-bind-html="printRowDetail(value)"></td>
-    </tr>
-  </table>
+  <af-table record="data.records[rowId]">
+
+  </af-table>
 </div>
-
-<script type="text/javascript">
-$(document).ready(function(){
-  $('.collapsible').collapsible({
-    bind: 'click'
-  });
-  alert("Bound them!");
-});
-
-</script>

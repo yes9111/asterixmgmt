@@ -31,4 +31,9 @@ AHelper.prototype.extractShape = function(obj)
   return false;
 };
 
+AHelper.prototype.getMsg = function()
+{
+  return "hei";
+}
+
 

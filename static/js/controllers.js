@@ -300,33 +300,31 @@ asterface.controller('BaseController', function($scope, $http, $location){
       {
         var html = '<div class="collapsible" id="c' + $scope.browsing.numCollapsible + '">';
         html += 'Unordered List</div>';
-        html += '<div class="unorderedlist" class="container"><div class="content">';
+        html += '<div class="unorderedlist" class="content">';
         for(var k in val.unorderedlist)
         {
           html += '<div class="datum">';
           html += $scope.printRowDetail(val.unorderedlist[k]);
           html += '</div>';
         }
-        html += '</div></div>';
+        html += '</div>';
         return html;
       }
       else if(val.hasOwnProperty('orderedlist')){
         var html = '<div class="collapsible" id="c' + $scope.browsing.numCollapsible + '">';
         html += 'Ordered List</div>';
-        html += '<div class="orderedlist container">';
-        html += '<div class="content">';
+        html += '<div class="content" class="orderedlist">';
         for(var k in val.orderedlist) {
           html += '<div class="datum">';
           html += $scope.printRowDetail(val.orderedlist[k]);
           html += '</div>';
         }
-        html += '</div></div>';
+        html += '</div>';
         return html;
       }
       else {
         var html='<div class="collapsible" id="c' + $scope.browsing.numCollapsible + '">';
         html += 'Record</div>';
-        html += '<div class="container">';
         html += '<div class="content">';
         html += '<table class="record">';
         for(var k in val) {
@@ -335,7 +333,7 @@ asterface.controller('BaseController', function($scope, $http, $location){
           html += '<td class="field-value">' + $scope.printRowDetail(val[k]) + '</td>';
           html += '</tr>';
         }
-        html += '</table></div></div>';
+        html += '</table></div>';
         return html;
       }
     }
