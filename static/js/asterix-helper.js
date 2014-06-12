@@ -31,3 +31,4 @@ AHelper.prototype.extractShape = function(obj)
   return false;
 };
 
+

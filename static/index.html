@@ -2,15 +2,17 @@
 <html ng-app="asterface">
   <head>
     <script type="text/javascript" src="/static/js/jquery-2.1.0.min.js"></script>  
+    <script type="text/javascript" src="/static/js/jquery.collapsible.js"></script>
     <script type="text/javascript" src="/static/js/asterix-sdk-stable.js"></script>
-    <script type="text/javascript" src="/static/js/angular.js"></script>
+    <script type="text/javascript" src="/static/js/angular-1.2.16.js"></script>
     <script type="text/javascript" src="/static/js/angular-route.js"></script>
     <script type="text/javascript" src="/static/js/angular-sanitize.js"></script>
 
     <script type="text/javascript" src="/static/js/asterix-helper.js"></script> 
-    <script type="text/javascript" src="/static/js/controllers.js"></script>
     <script type="text/javascript" src="/static/js/asterix-manager.js"></script>
-        
+    <script type="text/javascript" src="/static/js/controllers.js"></script>
+    <script type="text/javascript" src="/static/js/directives.js"></script>
+            
     <link rel="stylesheet" href="/static/css/manager.css">
     <title>Asterix Manager</title>
   </head>
@@ -20,14 +22,6 @@
     </div>
     
     <div class="browser-bar">
-    
-      <div class="query-box" ng-submit="loadQuery()">
-        <form>
-        <input type="text" ng-model="browsing.query">
-        <input type="submit" value="Query!">
-        </form>
-      </div>
-      
       <label for="dataverse-selector">Dataverse</label>
 	    <select name="dataverse-selector" ng-model="browsing.dataverse" ng-change="loadDataverse()">
 		    <option ng-repeat="dv in data.dataverses" value="{{dv.DataverseName}}">
@@ -35,16 +29,17 @@
 		    </option>
 	    </select>
       
-      <label for="dataset-selector">Dataset</label>
-      <select name="dataset-selector" ng-model="browsing.dataset" ng-change="loadDataset()">
+      <label for="dataset-selector" ng-if="browsing.dataverse">Dataset</label>
+      <select name="dataset-selector" ng-model="browsing.dataset" ng-change="loadDataset()" ng-if="browsing.dataverse">
         <option ng-repeat="ds in data.datasets" value="{{ds.DatasetName}}">
           {{ds.DatasetName}}
         </option>
       </select>
       
       
-      <a href="#/newdataset">New Dataset</a>
-      <a href="#/newdatatype">New Datatype</a>
+      <a href="#/newdataset" ng-if="browsing.dataverse">New Dataset</a>
+      <a href="#/newdatatype" ng-if="browsing.dataverse">New Datatype</a>
+      <a href="#/query" ng-if="browsing.dataverse">Query</a>
     </div>
     
     <div id="content-box" ng-view>

@@ -33,9 +33,16 @@ body div.browser-bar select
   margin-right:1em;
 }
 
+body div.browser-bar a{
+  color:white;
+  background:#99B2FF;
+  padding:0.2em;
+  
+}
+
 body div#content-box
 {
-  padding:0 0.7em;
+  padding:1em 0.7em;
 }
 
 body div.browser-bar div.query-box{
@@ -73,6 +80,8 @@ body div.browser-box div.unorderedlist
 }
 
 
+
+
 /* ORDERED LIST */
 body div.browser-box div.orderedlist
 {
@@ -81,4 +90,15 @@ body div.browser-box div.orderedlist
   margin-bottom:0.3em;  
 }
 
+.query-box
+{
+  width:50%;
+  height:10em;
+  display:block;
+}
+
+.results-box
+{
+  background:lightgray;
+}
 

@@ -6,8 +6,8 @@
 
 <div class="browser-box" ng-if="browsing.dataset">
   <div class="dataset-control-bar" >
-    <button ng-click="toggleForm()">Show/Hide Form</button>
-    <div id="insert-box" ng-if="browsing.showInsertForm">
+    <button ng-click="toggleForm()">Show/Hide Insert Form</button>
+    <div id="insert-box" ng-show="browsing.showInsertForm">
       <div ng-repeat="field in insert.fields">
         <label>{{ field.FieldName }} ({{field.FieldType}})</label>
         <input class="insert-field" fieldtype="{{field.FieldType}}" name="{{field.FieldName}}">
@@ -58,7 +58,7 @@
     <tr>
       <th>Actions</th>
       <th ng-repeat="field in browsing.simpleFields">
-        {{ field.FieldName }} ({{field.FieldType}})
+        {{ field.FieldName }}
       </th>
       <th ng-if="insert.isOpen">Extra</th>
     </tr>

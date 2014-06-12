@@ -1,6 +1,6 @@
 var controllers = {};
 
-controllers.BrowseController = function($scope, $location){
+asterface.controller('BrowseController', function($scope, $location){
   $scope.insert.extraFields = [];
   
   $scope.insert.update = function()
@@ -95,61 +95,19 @@ controllers.BrowseController = function($scope, $location){
     if(helper.extractNumber(v) !== false) return helper.extractNumber(v);
     else  return "Undefined presenter";
   }
-};
+});
 
-controllers.RowController = function($scope, $routeParams){
+asterface.controller('RowController', function($scope, $routeParams){
   $scope.rowId = $routeParams.rid;
   
-  $scope.printRowDetail = function(val)
-  {
-
-    if(angular.isObject(val))
-    {
-      if(val.hasOwnProperty('unorderedlist'))
-      {
-        var html = '<div class="unorderedlist">';
-        for(var k in val.unorderedlist)
-        {
-          html += '<div class="datum">';
-          html += $scope.printRowDetail(val.unorderedlist[k]);
-          html += '</div>';
-        }
-        html += '</div>';
-        return html;
-      }
-      else if(val.hasOwnProperty('orderedlist')){
-        var html = '<div class="orderedlist">';
-        for(var k in val.orderedlist) {
-          html += '<div class="datum">';
-          html += $scope.printRowDetail(val.orderedlist[k]);
-          html += '</div>';
-        }
-        html += '</div>';
-        return html;
-      }
-      // Integer
-      else if(helper.extractNumber(val) !== false) {
-        return '<span class="number">' + extractNumber(val) + '</span>';
-      }
-      else {
-        var html = '<table class="record">';
-        for(var k in val) {
-          html += '<tr>';
-          html += '<td class="field-name">' + k + '</td>';
-          html += '<td class="field-value">' + $scope.printRowDetail(val[k]) + '</td>';
-          html += '</tr>';
-        }
-        html += '</table>';
-        return html;
-      }
-    }
-    else{
-      return val;    
-    }
+  
+  
+  $scope.back = function(){
+    window.history.back();
   };
-};
+});
 
-controllers.NewDatasetController = function($scope){
+asterface.controller('NewDatasetController', function($scope){
   $scope.createDataset = function()
   {
     var query = 'create dataset ' + $scope.datasetForm['name'] + ' (' + $scope.datasetForm['type'] + ') primary key ';
@@ -160,13 +118,13 @@ controllers.NewDatasetController = function($scope){
       alert("Successfully created dataset");
     });
   };
-};
+});
 
 // New datatype controller
 // Controller for the view for inserting new data types
 
 
-controllers.NewDatatypeController = function($scope){
+asterface.controller('NewDatatypeController', function($scope){
   $scope.dataTypeForm = {
     name: "",
     fields: [],
@@ -208,9 +166,9 @@ controllers.NewDatatypeController = function($scope){
     $scope.dataTypeForm.fields.splice(index, 1);
   }
   
-};
+});
 
-controllers.BaseController = function($scope, $http, $location){
+asterface.controller('BaseController', function($scope, $http, $location){
   $scope.browsing = { 
     dataverse: false, 
     dataset: false,
@@ -219,11 +177,11 @@ controllers.BaseController = function($scope, $http, $location){
       page: 1
     },
     showInsertForm: false,
+    numCollapsible: 0
   };
   
   $scope.data = {};
   $scope.insert = {};
-  $scope.types = 
   
   loadDatabase();
 
@@ -312,21 +270,6 @@ controllers.BaseController = function($scope, $http, $location){
     });
   };
   
-  $scope.loadQuery = function()
-  {
-    if(!$scope.browsing.dataverse){
-      alert("You need to select a dataverse!");
-      return; // requires dataverse to be selected
-    }
-    
-    runQuery($scope.browsing.dataverse, $scope.browsing.query, function(json){
-      $scope.data.records = [];
-      angular.forEach(json, function(row){
-        $scope.data.records.push(row);
-      });
-    });
-  };
-  
   $scope.loadInsertForm = function()
   {
     var typeName = $scope.data.datasets[$scope.browsing.dataset].DataTypeName;
@@ -345,6 +288,76 @@ controllers.BaseController = function($scope, $http, $location){
   {
     return $scope.browsing.dataverse + "." + $scope.browsing.dataset;
   }
-};
+  
+  $scope.printRowDetail = function(val)
+  {
+    if(helper.extractNumber(val) !== false) {
+        return '<span class="number">' + helper.extractNumber(val) + '</span>';
+    }
+    else if(angular.isObject(val))
+    {
+      if(val.hasOwnProperty('unorderedlist'))
+      {
+        var html = '<div class="collapsible" id="c' + $scope.browsing.numCollapsible + '">';
+        html += 'Unordered List</div>';
+        html += '<div class="unorderedlist" class="container"><div class="content">';
+        for(var k in val.unorderedlist)
+        {
+          html += '<div class="datum">';
+          html += $scope.printRowDetail(val.unorderedlist[k]);
+          html += '</div>';
+        }
+        html += '</div></div>';
+        return html;
+      }
+      else if(val.hasOwnProperty('orderedlist')){
+        var html = '<div class="collapsible" id="c' + $scope.browsing.numCollapsible + '">';
+        html += 'Ordered List</div>';
+        html += '<div class="orderedlist container">';
+        html += '<div class="content">';
+        for(var k in val.orderedlist) {
+          html += '<div class="datum">';
+          html += $scope.printRowDetail(val.orderedlist[k]);
+          html += '</div>';
+        }
+        html += '</div></div>';
+        return html;
+      }
+      else {
+        var html='<div class="collapsible" id="c' + $scope.browsing.numCollapsible + '">';
+        html += 'Record</div>';
+        html += '<div class="container">';
+        html += '<div class="content">';
+        html += '<table class="record">';
+        for(var k in val) {
+          html += '<tr>';
+          html += '<td class="field-name">' + k + '</td>';
+          html += '<td class="field-value">' + $scope.printRowDetail(val[k]) + '</td>';
+          html += '</tr>';
+        }
+        html += '</table></div></div>';
+        return html;
+      }
+    }
+    else{
+      return val;    
+    }
+  };
+});
+
+asterface.controller('QueryController', function($scope){
+  $scope.query = {};
+  
+  $scope.query.loadQuery = function()
+  {
+    if($scope.browsing.dataverse) A.dataverse($scope.browsing.dataverse);
+    A.query($scope.query.txt, function(json){
+      var results = eval(json);
+      $scope.$apply(function(){
+        $scope.query.results = results.results;
+      });
+    });
+  };
+});
 
 

@@ -5,8 +5,6 @@ var A = new AsterixDBConnection({
 
 var helper = new AHelper();
 
-asterface.controller(controllers);
-
 asterface.config(['$routeProvider', 
   function($routeProvider) {
     $routeProvider.when('/browse', {
@@ -16,6 +14,10 @@ asterface.config(['$routeProvider',
     when('/row/:rid', {
       templateUrl: '/static/partials/viewrow.html',
       controller: 'RowController'
+    }).
+    when('/query', {
+      templateUrl: '/static/partials/query.html',
+      controller: 'QueryController'
     }).
     when('/newdataset', {
       templateUrl: '/static/partials/datasetform.html',

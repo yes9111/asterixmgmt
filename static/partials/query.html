@@ -1,0 +1,9 @@
+<div ng-if="browsing.dataverse">Using <i>{{browsing.dataverse}}</i>.</div>
+<form ng-submit="query.loadQuery()">
+  <textarea ng-model="query.txt" class="query-box">
+  </textarea>
+  <button type="submit">Query!</button>
+</form>
+
+<div class="results-box browser-box" ng-if="query.results" ng-bind-html="printRowDetail(query.results)">
+</div>
