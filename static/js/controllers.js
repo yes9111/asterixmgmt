@@ -21,14 +21,15 @@ asterface.controller('BrowseController', function($scope, $location){
         record[ field.attr("name") ] = field.val();
         break;
       default:
-        alert("Unknown field type.");
+	  	record[ field.attr("name") ] = new AExpression(field.val());
         return;
       }
 
     });
     
     var insStmt = new InsertStatement($scope.getQualifiedLocation(), record);
-    A.update(insStmt.val(), $scope.refreshRecords);
+    alert(insStmt.val());
+	A.update(insStmt.val(), $scope.refreshRecords);
   };
   
   $scope.insert.addField = function(){
@@ -92,7 +93,7 @@ asterface.controller('BrowseController', function($scope, $location){
   $scope.browsing.printValue = function(v){
     if(angular.isString(v)) return v;
     if(helper.extractNumber(v) !== false) return helper.extractNumber(v);
-    else  return "Undefined presenter";
+    else return v;
   }
 });
 
