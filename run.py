@@ -44,4 +44,4 @@ def run_asterix_ddl():
 def run_asterix_update():
     return (build_response("update", dict(request.query)))
     
-run(host='localhost', port=3000, debug=True)
+run(host='localhost', port=7000, debug=True)

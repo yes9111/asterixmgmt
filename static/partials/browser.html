@@ -1,12 +1,14 @@
 <div class="browser-box" ng-if="browsing.dataset">
-  <label for="ipp">Records Per Page</label>
-  <input type="number" name="numdata-selector" ng-model="browsing.paging.itemsPerPage" ng-change="loadDataset()">
+  <form class="pure-form">
+    <label for="ipp">Records Per Page</label>
+    <input type="number" name="numdata-selector" ng-model="browsing.paging.itemsPerPage" ng-change="loadDataset()">
 
-  <label for="page">Page</label>
-  <input type="number" name="page" ng-model="browsing.paging.page" ng-change="loadDataset()">
+    <label for="page">Page</label>
+    <input type="number" name="page" ng-model="browsing.paging.page" ng-change="loadDataset()">
+  </form>
   
   <div class="dataset-control-bar" >
-    <button ng-click="toggleForm()">Show/Hide Insert Form</button>
+    <button class="pure-button" ng-click="toggleForm()">Show/Hide Insert Form</button>
     <div id="insert-box" ng-show="browsing.showInsertForm">
       <table>
         <tr ng-repeat="field in insert.fields">

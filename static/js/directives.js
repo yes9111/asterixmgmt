@@ -1,4 +1,5 @@
-asterface.directive('afTable', function($timeout){
+angular.module('asterface')
+.directive('afTable', function($timeout){
   function link($scope, element, attrs){
     $timeout(function(){
       $('.collapsible').collapsible({

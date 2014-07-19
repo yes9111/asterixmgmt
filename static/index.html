@@ -12,6 +12,7 @@
     <script type="text/javascript" src="/static/js/asterix-manager.js"></script>
     <script type="text/javascript" src="/static/js/controllers.js"></script>
     <script type="text/javascript" src="/static/js/directives.js"></script>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
     <link rel="stylesheet" href="/static/css/manager.css">
     <title>Asterix Manager</title>
   </head>
@@ -21,22 +22,21 @@
     </div>
     
     <div class="browser-bar">
-      <label for="dataverse-selector">Dataverse</label>
-	    <select name="dataverse-selector" ng-model="browsing.dataverse" ng-change="loadDataverse()">
-		    <option ng-repeat="dv in data.dataverses" value="{{dv.DataverseName}}">
-			    {{dv.DataverseName}}
-		    </option>
-	    </select>
+      <select name="dataverse-selector" ng-model="browsing.dataverse" ng-change="loadDataverse()">
       
-      <label for="dataset-selector" ng-if="browsing.dataverse">Dataset</label>
-      <select name="dataset-selector" ng-model="browsing.dataset" ng-change="loadDataset()" ng-if="browsing.dataverse">
-        <option ng-repeat="ds in data.datasets" value="{{ds.DatasetName}}">
-          {{ds.DatasetName}}
-        </option>
+        <option value="heh" ng-selected><i>Select Dataverse</i></option>
+	      <option ng-repeat="dv in data.dataverses" ng-value="dv.DataverseName" ng-bind="dv.DataverseName">
+	      </option>
       </select>
       
+      <select name="dataset-selector" ng-model="browsing.dataset" ng-change="loadDataset()" ng-if="browsing.dataverse">
+        <option value="heh" ng-selected><i>Select Dataset</i></option>
+        <option ng-repeat="ds in data.datasets" ng-value="ds.DatasetName" ng-bind="ds.DatasetName"></option>
+      </select>
+
+        
       
-      <a href="#/newdataset" ng-if="browsing.dataverse">New Dataset</a>
+      <a href="#/newdataset" ng-if="browsing.dataverse">New Dataset</button>
       <a href="#/newdatatype" ng-if="browsing.dataverse">New Datatype</a>
       <a href="#/query" ng-if="browsing.dataverse">Query</a>
     </div>

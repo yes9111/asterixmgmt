@@ -1,6 +1,5 @@
-var controllers = {};
-
-asterface.controller('BrowseController', function($scope, $location){
+angular.module('asterface').controller('BrowseController', ['$scope', '$location', 'asterix', function($scope, $location, asterix){
+  const A = asterix.db;
   $scope.insert.extraFields = [];
   
   $scope.insert.update = function()
@@ -29,7 +28,7 @@ asterface.controller('BrowseController', function($scope, $location){
     
     var insStmt = new InsertStatement($scope.getQualifiedLocation(), record);
     alert(insStmt.val());
-	A.update(insStmt.val(), $scope.refreshRecords);
+  	A.update(insStmt.val(), $scope.refreshRecords);
   };
   
   $scope.insert.addField = function(){
@@ -50,7 +49,7 @@ asterface.controller('BrowseController', function($scope, $location){
       var val = false;
       
       // support integers
-      if(helper.extractNumber(record[key]) !== false) val = helper.extractNumber(record[key]);
+      if(asterix.helper.extractNumber(record[key]) !== false) val = asterix.helper.extractNumber(record[key]);
       else if(typeof record[key] == "string") val = '"' + record[key] + '"';
       else alert("Unknown value (" + key + "): " + record[key]);
       
@@ -92,22 +91,19 @@ asterface.controller('BrowseController', function($scope, $location){
   
   $scope.browsing.printValue = function(v){
     if(angular.isString(v)) return v;
-    if(helper.extractNumber(v) !== false) return helper.extractNumber(v);
+    if(asterix.helper.extractNumber(v) !== false) return asterix.helper.extractNumber(v);
     else return v;
   }
-});
-
-asterface.controller('RowController', function($scope, $routeParams){
+}])
+.controller('RowController', function($scope, $routeParams){
   $scope.rowId = $routeParams.rid;
-  
-  
   
   $scope.back = function(){
     window.history.back();
   };
-});
-
-asterface.controller('NewDatasetController', function($scope){
+})
+.controller('NewDatasetController', ['$scope', 'asterix', function($scope, asterix){
+  const A = asterix.db;
   $scope.datasetForm = {
     primaryKeys: []
   };
@@ -133,13 +129,13 @@ asterface.controller('NewDatasetController', function($scope){
       });
     });
   };
-});
+}])
 
 // New datatype controller
 // Controller for the view for inserting new data types
-
-
-asterface.controller('NewDatatypeController', function($scope){
+.controller('NewDatatypeController', ['$scope', 'asterix', function($scope, asterix){
+  const A = asterix.db;
+  
   $scope.dataTypeForm = {
     name: "",
     fields: [],
@@ -181,11 +177,11 @@ asterface.controller('NewDatatypeController', function($scope){
     $scope.dataTypeForm.fields.splice(index, 1);
   }
   
-});
-
-asterface.controller('BaseController', function($scope, $http, $location){
-  $scope.browsing = { 
-    dataverse: false, 
+}])
+.controller('BaseController', ['$scope', '$http', '$location', 'asterix', function($scope, $http, $location, asterix){
+  const A = asterix.db;
+  $scope.browsing = {
+    dataverse: false,
     dataset: false,
     paging: {
       itemsPerPage: 30,
@@ -197,6 +193,7 @@ asterface.controller('BaseController', function($scope, $http, $location){
   
   $scope.data = {};
   $scope.insert = {};
+
   
   loadDatabase();
 
@@ -213,6 +210,8 @@ asterface.controller('BaseController', function($scope, $http, $location){
         $scope.data.dataverses[row.DataverseName] = row;
       });
     });
+    
+    
   };
   
   
@@ -228,19 +227,18 @@ asterface.controller('BaseController', function($scope, $http, $location){
   
 	$scope.loadDataverse = function()
 	{
-	  var dv = $scope.browsing.dataverse;
+	  if(!$scope.browsing.dataverse) return;
 	  $scope.data.datasets = {};
 	  $scope.data.datatypes = {};
 	  var query = new FLWOGRExpression()
 	    .ForClause("$ds", new AExpression("dataset Dataset"))
-	    .WhereClause(new AExpression("$ds.DataverseName=\"" + dv + "\""))
+	    .WhereClause(new AExpression("$ds.DataverseName=\"" + $scope.browsing.dataverse + "\""))
 	    .ReturnClause("$ds");
 	  
 	  runQuery('Metadata', query.val(), function(json){
 	    angular.forEach(json, function(ds){
 	      $scope.data.datasets[ds.DatasetName] = ds;
 	    });
-	    $scope.browsing.dataset = false;
 	    $scope.data.records = [];
 	  });
 
@@ -269,7 +267,7 @@ asterface.controller('BaseController', function($scope, $http, $location){
 
     $scope.browsing.simpleFields = [];
     for(var i in simpleFields) {
-      if(helper.simpleTypes.hasOwnProperty(simpleFields[i].FieldType)){
+      if(asterix.helper.simpleTypes.hasOwnProperty(simpleFields[i].FieldType)){
         $scope.browsing.simpleFields.push(simpleFields[i]);
       }
     }
@@ -306,8 +304,8 @@ asterface.controller('BaseController', function($scope, $http, $location){
   
   $scope.printRowDetail = function(val)
   {
-    if(helper.extractNumber(val) !== false) {
-        return '<span class="number">' + helper.extractNumber(val) + '</span>';
+    if(asterix.helper.extractNumber(val) !== false) {
+        return '<span class="number">' + asterix.helper.extractNumber(val) + '</span>';
     }
     else if(angular.isObject(val))
     {
@@ -356,21 +354,20 @@ asterface.controller('BaseController', function($scope, $http, $location){
       return val;    
     }
   };
-});
-
-asterface.controller('QueryController', function($scope){
+}])
+.controller('QueryController', ['$scope', 'asterix', function($scope, asterix){
   $scope.query = {};
   
   $scope.query.loadQuery = function()
   {
-    if($scope.browsing.dataverse) A.dataverse($scope.browsing.dataverse);
-    A.query($scope.query.txt, function(json){
+    if($scope.browsing.dataverse) asterix.db.dataverse($scope.browsing.dataverse);
+    asterix.db.query($scope.query.txt, function(json){
       var results = eval(json);
       $scope.$apply(function(){
         $scope.query.results = results.results;
       });
     });
   };
-});
+}]);
 
 
