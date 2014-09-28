@@ -22,21 +22,18 @@
     </div>
     
     <div class="browser-bar">
-      <select name="dataverse-selector" ng-model="browsing.dataverse" ng-change="loadDataverse()">
-      
-        <option value="heh" ng-selected><i>Select Dataverse</i></option>
-	      <option ng-repeat="dv in data.dataverses" ng-value="dv.DataverseName" ng-bind="dv.DataverseName">
-	      </option>
+      <select name="dataverse-selector" ng-model="browsing.dataverse">
+        <option ng-repeat="dv in data.dataverses" ng-value="dv.DataverseName">{{dv.DataverseName}}
+        </option>
       </select>
       
-      <select name="dataset-selector" ng-model="browsing.dataset" ng-change="loadDataset()" ng-if="browsing.dataverse">
-        <option value="heh" ng-selected><i>Select Dataset</i></option>
-        <option ng-repeat="ds in data.datasets" ng-value="ds.DatasetName" ng-bind="ds.DatasetName"></option>
+      <select name="dataset-selector" ng-model="browsing.dataset" ng-if="browsing.dataverse">
+        <option ng-repeat="ds in data.datasets" ng-value="ds.DatasetName" ng-bind="ds.DatasetName">{{ds.DatasetName}}</option>
       </select>
 
         
       
-      <a href="#/newdataset" ng-if="browsing.dataverse">New Dataset</button>
+      <a href="#/newdataset" ng-if="browsing.dataverse">New Dataset</a>
       <a href="#/newdatatype" ng-if="browsing.dataverse">New Datatype</a>
       <a href="#/query" ng-if="browsing.dataverse">Query</a>
     </div>

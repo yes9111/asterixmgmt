@@ -1,6 +1,11 @@
 angular.module('asterface').controller('BrowseController', ['$scope', '$location', 'asterix', function($scope, $location, asterix){
   const A = asterix.db;
   $scope.insert.extraFields = [];
+
+  /*
+  */
+  console.log('hello world');
+
   
   $scope.insert.update = function()
   {
@@ -194,6 +199,17 @@ angular.module('asterface').controller('BrowseController', ['$scope', '$location
   $scope.data = {};
   $scope.insert = {};
 
+  $scope.$watch('browsing.dataverse', function(newDV, oldDV){
+    if(newDV !== false){
+      $scope.loadDataverse();
+    }
+  });
+
+  $scope.$watch('browsing.dataset', function(newDS, oldDS){
+    if(newDS !== false){
+      $scope.loadDataset();
+    }
+  });
   
   loadDatabase();
 
@@ -210,8 +226,6 @@ angular.module('asterface').controller('BrowseController', ['$scope', '$location
         $scope.data.dataverses[row.DataverseName] = row;
       });
     });
-    
-    
   };
   
   
@@ -244,7 +258,7 @@ angular.module('asterface').controller('BrowseController', ['$scope', '$location
 
     var typesQuery = new FLWOGRExpression()
       .ForClause("$dt", new AExpression("dataset Datatype"))
-      .WhereClause(new AExpression("$dt.DataverseName=\"" + dv + "\""))
+      .WhereClause(new AExpression("$dt.DataverseName=\"" + $scope.browsing.dataverse  + "\""))
       .ReturnClause("$dt");
     
     runQuery('Metadata', typesQuery.val(), function(json){

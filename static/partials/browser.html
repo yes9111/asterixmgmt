@@ -1,5 +1,5 @@
 <div class="browser-box" ng-if="browsing.dataset">
-  <form class="pure-form">
+  <form class="pure-form" id="paging-form">
     <label for="ipp">Records Per Page</label>
     <input type="number" name="numdata-selector" ng-model="browsing.paging.itemsPerPage" ng-change="loadDataset()">
 
@@ -64,23 +64,8 @@
   </div>
   
   <!-- WORK ON A TABULAR VIEW -->
-  <table>
-    <tr>
-      <th>Actions</th>
-      <th ng-repeat="field in browsing.simpleFields">
-        {{ field.FieldName }}
-      </th>
-      <th ng-if="insert.isOpen">Extra</th>
-    </tr>
-    <tr ng-repeat="r in data.records" class="record">
-      <!-- Options to control the record options -->
-      <td class="record-control-bar">
-        <button ng-click="deleteRecord($index)">X</button>
-        <button ng-click="magnifyRecord($index)">*</button>
-      </td>
-      
-      <td ng-repeat="field in browsing.simpleFields">
-        {{ browsing.printValue(r[field.FieldName]) }}
-      </td>
-    </tr>    <!-- End of Records --> 
+  <div ng-repeat="record in data.records">
+      <af-adm value="record"></af-adm>
+  </div>
+  
 </div> <!-- End of browser box -->
