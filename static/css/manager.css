@@ -90,7 +90,7 @@ body div.browser-box div.record-control-bar
   background:darkgreen;
 }
 
-.collapse-closed.orderedlist{
+.collapse-close.orderedlist{
   background:lightgreen;
 }
 
@@ -98,11 +98,11 @@ body div.browser-box div.record-control-bar
   background:darkblue;
 }
 
-.collapse-closed.unorderedlist{
+.collapse-close.unorderedlist{
   background:lightblue;
 }
 
-.collapse-closed.record{
+.collapse-close.record{
   background:red;
 }
 
@@ -112,7 +112,7 @@ body div.browser-box div.record-control-bar
   background:darkred;
 }
 
-tr.record{
+.record-container{
   margin-bottom:1em;
 }
 

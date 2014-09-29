@@ -1,11 +1,6 @@
 angular.module('asterface').controller('BrowseController', ['$scope', '$location', 'asterix', function($scope, $location, asterix){
   const A = asterix.db;
   $scope.insert.extraFields = [];
-
-  /*
-  */
-  console.log('hello world');
-
   
   $scope.insert.update = function()
   {

@@ -13,7 +13,9 @@ angular.module('asterface')
         }
         else{
           if(angular.isArray(scope.value)){
-            var table = angular.element('<table></table>');
+            var header = angular.element('<div class="collapsible orderedlist">Ordered List</div>');
+            var table = angular.element('<table class="content"></table>');
+            element.append(header);
             element.append(table);
 
             angular.forEach(scope.value, function(valEl){
@@ -22,10 +24,16 @@ angular.module('asterface')
               var compiled = $compile('<af-adm value="value"></af-adm>')(childScope);
               table.append(compiled);
             });
+
+            header.collapsible({
+              speed:0
+            });
           }
           else if(angular.isObject(scope.value)){
             // create a table
+            var header = angular.element('<div class="record collapsible">Record</div>');
             var table = angular.element('<table></table>');
+            element.append(header);
             element.append(table);
 
             // populate table w/ individual record elements
@@ -36,6 +44,10 @@ angular.module('asterface')
               $compile('<tr><td class="field-name" ng-bind="key"></td><td><af-adm value="value"></af-adm></td></tr>')(childScope, function(cloned, scope){
                 table.append(cloned);
               });
+            });
+
+            header.collapsible({
+              speed: 0
             });
           }
         }
