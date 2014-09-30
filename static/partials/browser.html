@@ -8,7 +8,7 @@
   </form>
   
   <div class="dataset-control-bar" >
-    <button class="pure-button" ng-click="toggleForm()">Show/Hide Insert Form</button>
+    <button class="pure-button" ng-click="toggleForm()">+</button>
     <div id="insert-box" ng-show="browsing.showInsertForm">
       <table>
         <tr ng-repeat="field in insert.fields">
@@ -17,8 +17,6 @@
         </tr>
       </table>
   
-
-
       <div ng-if="insert.isOpen">
         <hr>
         <div ng-repeat="field in insert.extraFields">

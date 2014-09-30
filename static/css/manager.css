@@ -59,6 +59,11 @@ body div.browser-box td.field-name
   vertical-align:top;
 }
 
+body div.browser-box div.dataset-control-bar
+{
+  margin-top:1em;
+  margin-bottom:1em;
+}
 
 body div.browser-box div.record-control-bar
 {
@@ -86,30 +91,25 @@ body div.browser-box div.record-control-bar
 }
 
 /** collapsible **/
-.collapse-open.orderedlist{
+.collapsible.orderedlist{
   background:darkgreen;
 }
 
-.collapse-close.orderedlist{
-  background:lightgreen;
-}
 
-.collapse-open.unorderedlist{
+.collapsible.unorderedlist{
   background:darkblue;
 }
 
-.collapse-close.unorderedlist{
-  background:lightblue;
-}
-
-.collapse-close.record{
-  background:red;
-}
-
-
-
-.collapse-open.record{
+.collapsible.record{
   background:darkred;
+}
+
+.collapse-open .open-icon{
+  display:none;
+}
+
+.collapse-close .close-icon{
+  display:none;
 }
 
 .record-container{
