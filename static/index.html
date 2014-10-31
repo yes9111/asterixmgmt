@@ -1,17 +1,22 @@
 <!DOCTYPE html>
 <html ng-app="asterface">
   <head>
-    <script type="text/javascript" src="/static/js/jquery-2.1.0.min.js"></script>  
-    <script type="text/javascript" src="/static/js/jquery.collapsible.js"></script>
-    <script type="text/javascript" src="/static/js/asterix-sdk-stable.js"></script>
-    <script type="text/javascript" src="/static/js/angular-1.2.16.js"></script>
-    <script type="text/javascript" src="/static/js/angular-route.js"></script>
-    <script type="text/javascript" src="/static/js/angular-sanitize.js"></script>
+    <script type="text/javascript" src="/static/js/lib/jquery-2.1.0.min.js"></script>
+    <script type="text/javascript" src="/static/js/lib/jquery.collapsible.js"></script>
+    <script type="text/javascript" src="/static/js/lib/asterix-sdk-stable.js"></script>
+    <script type="text/javascript" src="/static/js/lib/angular-1.2.16.js"></script>
+    <script type="text/javascript" src="/static/js/lib/angular-route.js"></script>
+    <script type="text/javascript" src="/static/js/lib/angular-sanitize.js"></script>
 
-    <script type="text/javascript" src="/static/js/asterix-helper.js"></script> 
-    <script type="text/javascript" src="/static/js/asterix-manager.js"></script>
-    <script type="text/javascript" src="/static/js/controllers.js"></script>
+    <script type="text/javascript" src="/static/js/asterix.js"></script>
     <script type="text/javascript" src="/static/js/directives.js"></script>
+    <script type="text/javascript" src="/static/js/base.js"></script>
+    <script type="text/javascript" src="/static/js/browser.js"></script>
+    <script type="text/javascript" src="/static/js/newDataset.js"></script>
+    <script type="text/javascript" src="/static/js/newDatatype.js"></script>
+    <script type="text/javascript" src="/static/js/query.js"></script>
+    <script type="text/javascript" src="/static/js/viewRow.js"></script>
+
     <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
     <link rel="stylesheet" href="/static/css/manager.css">
     <title>Asterix Manager</title>
@@ -20,27 +25,25 @@
     <div class="header">
       <h1>Asterix Console</h1>
     </div>
-    
+
     <div class="browser-bar">
       <select name="dataverse-selector" ng-model="browsing.dataverse">
         <option ng-repeat="dv in data.dataverses" ng-value="dv.DataverseName">{{dv.DataverseName}}
         </option>
       </select>
-      
+
       <select name="dataset-selector" ng-model="browsing.dataset" ng-if="browsing.dataverse">
         <option ng-repeat="ds in data.datasets" ng-value="ds.DatasetName" ng-bind="ds.DatasetName">{{ds.DatasetName}}</option>
       </select>
 
-        
-      
       <a href="#/newdataset" ng-if="browsing.dataverse">New Dataset</a>
       <a href="#/newdatatype" ng-if="browsing.dataverse">New Datatype</a>
       <a href="#/query" ng-if="browsing.dataverse">Query</a>
     </div>
-    
+
     <div id="content-box" ng-view>
     </div>
-    
+
 
   </body>
 </html>

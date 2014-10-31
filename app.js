@@ -29,4 +29,6 @@ http.createServer(function(request, response){
 			asterixResponse.pipe(response);
 		});
 	}
-}).listen(3000);
+}).listen(3000, function(){
+  console.log('Server is listening on port 3000.');
+});
