@@ -1,4 +1,4 @@
-<div class="browser-box" ng-if="browsing.dataset">
+<div class="browser-box" ng-if="data.records">
   <form class="pure-form" id="paging-form">
     <label for="ipp">Records Per Page</label>
     <input type="number" name="numdata-selector" ng-model="browsing.paging.itemsPerPage" ng-change="loadDataset()">
@@ -6,7 +6,7 @@
     <label for="page">Page</label>
     <input type="number" name="page" ng-model="browsing.paging.page" ng-change="loadDataset()">
   </form>
-  
+
   <div class="dataset-control-bar" >
     <button class="pure-button" ng-click="toggleForm()">+</button>
     <div id="insert-box" ng-show="browsing.showInsertForm">
@@ -16,7 +16,7 @@
           <td><input class="insert-field" fieldtype="{{field.FieldType}}" name="{{field.FieldName}}"></td>
         </tr>
       </table>
-  
+
       <div ng-if="insert.isOpen">
         <hr>
         <div ng-repeat="field in insert.extraFields">
@@ -25,9 +25,9 @@
         </div>
       </div>
       <button ng-click="insert.update()">Insert</button>
-      
+
       <div ng-if="insert.isOpen">
-        
+
         <form ng-submit="insert.addField()">
           <fieldset>
             <legend>New Field</legend>
@@ -54,16 +54,16 @@
               <option value="orderedList">Ordered List</option>
             </select>
             <button type="submit" value="Add Field">Add Extra Field</button>
-          </fieldset>  
+          </fieldset>
         </form>
       </div>
 
-    </div>        
+    </div>
   </div>
-  
+
   <!-- WORK ON A TABULAR VIEW -->
   <div class="record-container" ng-repeat="record in data.records">
       <af-adm value="record"></af-adm>
   </div>
-  
+
 </div> <!-- End of browser box -->

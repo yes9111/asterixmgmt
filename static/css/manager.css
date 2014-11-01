@@ -5,6 +5,10 @@ body
   font-family:sans;
 }
 
+.hidden{
+  display:none;
+}
+
 body div.header
 {
   padding-left:1em;
@@ -37,7 +41,7 @@ body div.browser-bar a{
   color:white;
   background:#99B2FF;
   padding:0.2em;
-  
+
 }
 
 body div#content-box
@@ -127,4 +131,3 @@ th{
   color:white;
   font-weight:bold;
 }
-

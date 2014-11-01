@@ -1,110 +1,68 @@
 'use strict'
 angular.module('asterface')
 .controller('BaseController', ['$scope', '$http', '$location', 'asterix', function($scope, $http, $location, asterix){
-  var A = asterix.db;
   $scope.browsing = {
-    dataverse: false,
-    dataset: false,
     paging: {
       itemsPerPage: 30,
       page: 1
     },
     showInsertForm: false,
     numCollapsible: 0,
-    getLocation: function(){
-      return this.dataverse + '.' + this.dataset;
-    }
   };
 
   $scope.data = {};
   $scope.insert = {};
-
-  $scope.$watch('browsing.dataverse', function(newDV, oldDV){
-    if(newDV !== false){
-      $scope.loadDataverse();
-    }
-  });
-
-  $scope.$watch('browsing.dataset', function(newDS, oldDS){
-    if(newDS !== false){
-      $scope.loadDataset();
-    }
-  });
+  $scope.asterix = asterix;
 
   loadDatabase();
 
   function loadDatabase()
   {
     // Load dataverses
-    var query = new FLWOGRExpression()
-      .ForClause("$dv", new AExpression("dataset Dataverse"))
-      .ReturnClause("$dv");
+    $scope.data.dataverses = {};
 
-    runQuery('Metadata', query.val(), function(json){
-      $scope.data.dataverses = {};
-      angular.forEach(json, function(row){
+    asterix.query('Metadata', 'for $dv in dataset Dataverse return $dv;')
+    .then(function(results){
+      results.data.forEach(function(row){
         $scope.data.dataverses[row.DataverseName] = row;
       });
     });
   };
 
-
-  function runQuery(dataverse, query, func)
-  {
-    A.dataverse(dataverse).query(query, function(txt){
-      $scope.$apply(function(){
-        var json = eval('([' + txt.results + '])');
-        func(json);
-      });
-    });
-  }
-
 	$scope.loadDataverse = function()
 	{
-	  if(!$scope.browsing.dataverse) return;
 	  $scope.data.datasets = {};
 	  $scope.data.datatypes = {};
-	  var query = new FLWOGRExpression()
-	    .ForClause("$ds", new AExpression("dataset Dataset"))
-	    .WhereClause(new AExpression("$ds.DataverseName=\"" + $scope.browsing.dataverse + "\""))
-	    .ReturnClause("$ds");
 
-	  runQuery('Metadata', query.val(), function(json){
-	    angular.forEach(json, function(ds){
-	      $scope.data.datasets[ds.DatasetName] = ds;
-	    });
-	    $scope.data.records = [];
-	  });
+    asterix.query('Metadata', sprintf('for $ds in dataset Dataset where $ds.DataverseName="%s" return $ds',
+      asterix.currentDataverse
+    )).then(function(results){
+      results.data.forEach(function(dataset){
+        $scope.data.datasets[dataset.DatasetName] = dataset;
+      });
+      $scope.data.records = [];
+    });
 
-    var typesQuery = new FLWOGRExpression()
-      .ForClause("$dt", new AExpression("dataset Datatype"))
-      .WhereClause(new AExpression("$dt.DataverseName=\"" + $scope.browsing.dataverse  + "\""))
-      .ReturnClause("$dt");
-
-    runQuery('Metadata', typesQuery.val(), function(json){
-      angular.forEach(json, function(dt){
-        $scope.data.datatypes[dt.DatatypeName] = dt;
+    asterix.query('Metadata', sprintf('for $dt in dataset Datatype where $dt.DataverseName="%s" return $dt',
+      asterix.currentDataverse
+    )).then(function(results){
+      results.data.forEach(function(datatype){
+        $scope.data.datatypes[datatype.DatatypeName] = datatype;
       });
     });
 	};
 
 	$scope.loadDataset = function() {
-    if(!$scope.browsing.dataverse || !$scope.browsing.dataset) return;
-    var query = new FLWOGRExpression()
-      .ForClause("$d", new AExpression("dataset " + $scope.browsing.getLocation()))
-      .LimitClause(new AExpression($scope.browsing.paging.itemsPerPage + " offset " + ($scope.browsing.paging.page-1)*$scope.browsing.paging.itemsPerPage))
-      .ReturnClause("$d");
-
     // fill up simpleFields.
-    var datatype = $scope.data.datasets[$scope.browsing.dataset].DataTypeName;
-    var simpleFields = $scope.data.datatypes[datatype].Derived.Record.Fields.orderedlist;
+    var query = sprintf('for $d in dataset %s.%s limit %d offset %d return $d',
+      asterix.currentDataverse,
+      asterix.currentDataset,
+      $scope.browsing.paging.itemsPerPage,
+      ($scope.browsing.paging.page-1)*$scope.browsing.paging.itemsPerPage
+    );
 
-    runQuery($scope.browsing.dataverse, query.val(), function(json){
-      $scope.data.records = [];
-      angular.forEach(json, function(row){
-        $scope.data.records.push(row);
-      });
-
+    asterix.query('Metadata', query).then(function(results){
+      $scope.data.records = results.data;
       $scope.loadInsertForm();
       $location.path('/browse');
     });
@@ -112,15 +70,10 @@ angular.module('asterface')
 
   $scope.loadInsertForm = function()
   {
-    var typeName = $scope.data.datasets[$scope.browsing.dataset].DataTypeName;
+    var typeName = $scope.data.datasets[asterix.currentDataset].DataTypeName;
     var type = $scope.data.datatypes[typeName];
 
     $scope.insert.isOpen = type.Derived.Record.IsOpen;
     $scope.insert.fields = type.Derived.Record.Fields.orderedlist;
   };
-
-  $scope.refreshRecords = function()
-  {
-    $scope.$apply($scope.loadDataset);
-  }
 }])

@@ -8,6 +8,7 @@
     <script type="text/javascript" src="/static/js/lib/angular-route.js"></script>
     <script type="text/javascript" src="/static/js/lib/angular-sanitize.js"></script>
 
+    <script type="text/javascript" src="/static/js/lib/sprintf.js"></script>
     <script type="text/javascript" src="/static/js/asterix.js"></script>
     <script type="text/javascript" src="/static/js/directives.js"></script>
     <script type="text/javascript" src="/static/js/base.js"></script>
@@ -27,12 +28,12 @@
     </div>
 
     <div class="browser-bar">
-      <select name="dataverse-selector" ng-model="browsing.dataverse">
+      <select name="dataverse-selector" ng-model="asterix.currentDataverse" ng-change="loadDataverse();">
         <option ng-repeat="dv in data.dataverses" ng-value="dv.DataverseName">{{dv.DataverseName}}
         </option>
       </select>
 
-      <select name="dataset-selector" ng-model="browsing.dataset" ng-if="browsing.dataverse">
+      <select name="dataset-selector" ng-model="asterix.currentDataset" ng-change="loadDataset();" ng-if="asterix.currentDataverse">
         <option ng-repeat="ds in data.datasets" ng-value="ds.DatasetName" ng-bind="ds.DatasetName">{{ds.DatasetName}}</option>
       </select>
 

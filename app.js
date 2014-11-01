@@ -4,6 +4,7 @@
 var http = require('http');
 var fs = require('fs');
 var path = require('path');
+var mime = require('mime');
 
 http.createServer(function(request, response){
 	var STATIC_PREFIX = '/static/'
@@ -11,6 +12,8 @@ http.createServer(function(request, response){
 		fs.createReadStream('static/index.html').pipe(response);
 	}
 	else if(request.url.substring(0, STATIC_PREFIX.length) === STATIC_PREFIX){
+		// set correct mime type
+		response.setHeader('Content-Type', mime.lookup(request.url));
 		var staticUrl = request.url.substring(STATIC_PREFIX.length);
 		var staticPath = path.join('static/', staticUrl);
 		fs.createReadStream(staticPath).pipe(response);

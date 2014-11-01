@@ -6,8 +6,17 @@ angular.module('asterface', ['ngSanitize', 'ngRoute'])
     redirectTo: '/browse'
   });
 }])
-.factory('asterix', function(){
+.factory('asterix', ['$http', function($http){
+  var appendTransform = function(defaults, newTransformer){
+    defaults = angular.isArray(defaults) ? defaults : [defaults];
+    return defaults.concat(newTransformer);
+  };
   return {
+    // utility functions
+    db: new AsterixDBConnection({ dataverse: 'Metadata' }),
+    currentDataverse: false,
+    currentDataset: false,
+
     extractNumber: function(obj){
       if(angular.isNumber(obj)) return obj;
       if(!angular.isObject(obj)) return false;
@@ -19,6 +28,27 @@ angular.module('asterface', ['ngSanitize', 'ngRoute'])
       });
       return false;
     },
-    db: new AsterixDBConnection({ dataverse: 'Metadata' })
+    query: function(queryString){
+      if(arguments.length == 1){
+        var queryString = arguments[0];
+      }
+      else if(arguments.length == 2){
+        var queryString = 'use dataverse ' + arguments[0] + ';\n' + arguments[1];
+      }
+      else{
+        throw "Invalid number of arguments";
+      }
+      return $http({
+        url: '/query',
+        params:  {
+          query: queryString
+        },
+        transformResponse: appendTransform($http.defaults.transformResponse, function(response){
+          return eval('([' + response.results + '])');
+        })
+      }).catch(function(error){
+        console.log('Failed to get response from Asterix backend');
+      });
+    }
   };
-});
+}]);

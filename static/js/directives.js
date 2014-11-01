@@ -55,10 +55,6 @@ angular.module('asterface')
             element.append('<span>' + num + '</span>');
           }
           else{
-
-            /* For records */
-            /* TODO!  Parse simple asterix values that are wrapped as JSON objects, such as integers, shapes, etc... */
-
             var header = angular.element('<div class="record collapsible">Record <span class="open-icon">[+]</span><span class="close-icon">[-]</span></div>');
             var table = angular.element('<table></table>');
             element.append(header);
