@@ -38,9 +38,8 @@ angular.module('asterface')
 
     });
 
-    var insStmt = new InsertStatement($scope.browsing.getLocation(), record);
-    alert(insStmt.val());
-  	A.update(insStmt.val(), $scope.refreshRecords);
+    //!TODO implement this
+    asterix.insert(base.currentDataverse, base.currentDataset, record);
   };
 
   $scope.insert.addField = function(){

@@ -1,4 +1,4 @@
-<div ng-show="browsing.dataverse">
+<div ng-show="base.currentDataverse">
   <h1>Creating New Datatype</h1>
   <form ng-submit="createDatatype()">
     <label>DataType Name</label><input ng-model="dataTypeForm.name"><br>
@@ -47,6 +47,5 @@
     </select>
     <label>Optional</label><input type="checkbox" ng-model="dataTypeForm.newFieldOptional">
     <input type="button" value="Add Field" ng-click="dataTypeForm.addField()">
-  </fieldset>  
+  </fieldset>
 </div>
-

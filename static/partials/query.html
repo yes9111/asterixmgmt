@@ -1,8 +1,10 @@
-<div ng-if="browsing.dataverse">Using <i>{{browsing.dataverse}}</i>.</div>
+<div ng-if="base.currentDataverse">Using <i ng-bind="base.currentDataverse"></i>.</div>
 <form ng-submit="query.loadQuery()">
   <textarea ng-model="query.txt" class="query-box">
   </textarea>
   <button type="submit">Query!</button>
 </form>
 
-<af-adm value="query.results"></af-adm>
+<div class="record" ng-repeat="record in query.results">
+  <af-adm value="record"></af-adm>
+</div>

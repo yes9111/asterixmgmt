@@ -5,32 +5,32 @@ angular.module('asterface')
     controller: 'NewDatasetController'
   });
 }])
-.controller('NewDatasetController', ['$scope', 'asterix', function($scope, asterix){
-  const A = asterix.db;
+.controller('NewDatasetController', ['$scope', '$location', 'asterix', 'base', function($scope, $location, asterix, base){
   $scope.datasetForm = {
     primaryKeys: []
   };
-  
+
   $scope.datasetForm.addPrimaryKey = function(){
     $scope.datasetForm.primaryKeys.push($scope.datasetForm.newPrimaryKey);
   };
-  
+
   $scope.datasetForm.removePK = function(pkIndex){
     $scope.datasetForm.primaryKeys.splice(pkIndex, 1);
   };
-  
+
   $scope.datasetForm.createDataset = function()
   {
-    var query = 'create dataset ' + $scope.datasetForm['name'] + ' (' + $scope.datasetForm['type'] + ') primary key ';
-    var pkString = $scope.datasetForm.primaryKeys.join(',');
-    query += pkString;
-    
-    A.dataverse($scope.browsing.dataverse).ddl(query, function(){
-      alert("Successfully created dataset");
-      $scope.$apply(function(){
-        $scope.loadDataverse();
-      });
+    var query = sprintf('create dataset %s (%s) primary key %s',
+      $scope.datasetForm['name'],
+      $scope.datasetForm['type'],
+      $scope.datasetForm.primaryKeys.join(',')
+    );
+
+    asterix.ddl(base.currentDataverse, query).then(function(result){
+      base.loadDatasets();
+      base.currentDataset = $scope.datasetForm['name'];
+      $location.path('/browse');
+
     });
   };
 }])
-

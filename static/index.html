@@ -28,18 +28,20 @@
     </div>
 
     <div class="browser-bar">
-      <select name="dataverse-selector" ng-model="asterix.currentDataverse" ng-change="loadDataverse();">
-        <option ng-repeat="dv in data.dataverses" ng-value="dv.DataverseName">{{dv.DataverseName}}
+      <select name="dataverse-selector" ng-model="base.currentDataverse" ng-change="loadDataverse();">
+        <option ng-repeat="dv in base.dataverses" ng-value="dv.DataverseName">{{dv.DataverseName}}
         </option>
       </select>
 
-      <select name="dataset-selector" ng-model="asterix.currentDataset" ng-change="loadDataset();" ng-if="asterix.currentDataverse">
-        <option ng-repeat="ds in data.datasets" ng-value="ds.DatasetName" ng-bind="ds.DatasetName">{{ds.DatasetName}}</option>
+      <select name="dataset-selector" ng-model="base.currentDataset" ng-change="loadDataset();" ng-if="base.currentDataverse">
+        <option ng-repeat="ds in base.datasets" ng-value="ds.DatasetName" ng-bind="ds.DatasetName">{{ds.DatasetName}}</option>
       </select>
 
-      <a href="#/newdataset" ng-if="browsing.dataverse">New Dataset</a>
-      <a href="#/newdatatype" ng-if="browsing.dataverse">New Datatype</a>
-      <a href="#/query" ng-if="browsing.dataverse">Query</a>
+      <div ng-if="base.currentDataverse">
+        <a href="#/newdataset">New Dataset</a>
+        <a href="#/newdatatype">New Datatype</a>
+        <a href="#/query">Query</a>
+      </div>
     </div>
 
     <div id="content-box" ng-view>

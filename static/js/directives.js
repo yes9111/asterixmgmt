@@ -51,8 +51,7 @@ angular.module('asterface')
             });
           }
           else if(asterix.extractNumber(scope.value) !== false){
-            var num = asterix.extractNumber(scope.value);
-            element.append('<span>' + num + '</span>');
+            element.append('<span>' + asterix.extractNumber(scope.value) + '</span>');
           }
           else{
             var header = angular.element('<div class="record collapsible">Record <span class="open-icon">[+]</span><span class="close-icon">[-]</span></div>');

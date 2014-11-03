@@ -1,6 +1,71 @@
 'use strict'
 angular.module('asterface')
-.controller('BaseController', ['$scope', '$http', '$location', 'asterix', function($scope, $http, $location, asterix){
+.factory('base', ['asterix', function(asterix){
+  return {
+    db: new AsterixDBConnection({ dataverse: 'Metadata' }),
+    currentDataverse: false,
+    currentDataset: false,
+
+    dataverses: {},
+    datasets: {},
+    datatypes: {},
+    records: [],
+
+    loadDataverses: function(){
+      var base = this;
+      asterix.query('Metadata', 'for $dv in dataset Dataverse return $dv;')
+      .then(function(results){
+        results.data.forEach(function(row){
+          base.dataverses[row.DataverseName] = row;
+        });
+      });
+    },
+
+    loadDatasets: function(){
+      var base = this;
+      base.datasets = {};
+      asterix.query('Metadata', sprintf('for $ds in dataset Dataset where $ds.DataverseName="%s" return $ds',
+        this.currentDataverse
+      )).then(function(results){
+        results.data.forEach(function(dataset){
+          base.datasets[dataset.DatasetName] = dataset;
+        });
+        base.records = [];
+      });
+
+
+    },
+
+    loadDatatypes: function(){
+      var base = this;
+      base.datatypes = {};
+      asterix.query('Metadata', sprintf('for $dt in dataset Datatype where $dt.DataverseName="%s" return $dt',
+        this.currentDataverse
+      )).then(function(results){
+        results.data.forEach(function(datatype){
+          base.datatypes[datatype.DatatypeName] = datatype;
+        });
+      });
+    },
+
+    loadRecords: function(ipp, page){
+      var base = this;
+      // fill up simpleFields.
+      var query = sprintf('for $d in dataset %s.%s limit %d offset %d return $d',
+        this.currentDataverse,
+        this.currentDataset,
+        ipp,
+        (page-1)*ipp
+      );
+
+      asterix.query('Metadata', query).then(function(results){
+        base.records = results.data;
+      });
+    }
+
+  };
+}])
+.controller('BaseController', ['$scope', '$http', '$location', 'base', function($scope, $http, $location, base){
   $scope.browsing = {
     paging: {
       itemsPerPage: 30,
@@ -10,70 +75,34 @@ angular.module('asterface')
     numCollapsible: 0,
   };
 
-  $scope.data = {};
   $scope.insert = {};
-  $scope.asterix = asterix;
+  $scope.base = base;
+
+  var loadDatabase = $scope.loadDatabase = function()
+  {
+    base.loadDataverses();
+  };
 
   loadDatabase();
 
-  function loadDatabase()
-  {
-    // Load dataverses
-    $scope.data.dataverses = {};
-
-    asterix.query('Metadata', 'for $dv in dataset Dataverse return $dv;')
-    .then(function(results){
-      results.data.forEach(function(row){
-        $scope.data.dataverses[row.DataverseName] = row;
-      });
-    });
-  };
-
 	$scope.loadDataverse = function()
 	{
-	  $scope.data.datasets = {};
-	  $scope.data.datatypes = {};
-
-    asterix.query('Metadata', sprintf('for $ds in dataset Dataset where $ds.DataverseName="%s" return $ds',
-      asterix.currentDataverse
-    )).then(function(results){
-      results.data.forEach(function(dataset){
-        $scope.data.datasets[dataset.DatasetName] = dataset;
-      });
-      $scope.data.records = [];
-    });
-
-    asterix.query('Metadata', sprintf('for $dt in dataset Datatype where $dt.DataverseName="%s" return $dt',
-      asterix.currentDataverse
-    )).then(function(results){
-      results.data.forEach(function(datatype){
-        $scope.data.datatypes[datatype.DatatypeName] = datatype;
-      });
-    });
+    base.loadDatasets();
+    base.loadDatatypes();
 	};
 
 	$scope.loadDataset = function() {
-    // fill up simpleFields.
-    var query = sprintf('for $d in dataset %s.%s limit %d offset %d return $d',
-      asterix.currentDataverse,
-      asterix.currentDataset,
-      $scope.browsing.paging.itemsPerPage,
-      ($scope.browsing.paging.page-1)*$scope.browsing.paging.itemsPerPage
-    );
-
-    asterix.query('Metadata', query).then(function(results){
-      $scope.data.records = results.data;
-      $scope.loadInsertForm();
-      $location.path('/browse');
-    });
+    base.loadRecords($scope.browsing.paging.itemsPerPage, $scope.browsing.paging.page);
+    $scope.loadInsertForm();
+    $location.path('/browse');
   };
 
   $scope.loadInsertForm = function()
   {
-    var typeName = $scope.data.datasets[asterix.currentDataset].DataTypeName;
-    var type = $scope.data.datatypes[typeName];
+    var typeName = base.datasets[base.currentDataset].DataTypeName;
+    var type = base.datatypes[typeName];
 
     $scope.insert.isOpen = type.Derived.Record.IsOpen;
     $scope.insert.fields = type.Derived.Record.Fields.orderedlist;
   };
-}])
+}]);

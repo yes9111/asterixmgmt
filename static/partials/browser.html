@@ -1,4 +1,4 @@
-<div class="browser-box" ng-if="data.records">
+<div class="browser-box" ng-if="base.currentDataset">
   <form class="pure-form" id="paging-form">
     <label for="ipp">Records Per Page</label>
     <input type="number" name="numdata-selector" ng-model="browsing.paging.itemsPerPage" ng-change="loadDataset()">
@@ -62,7 +62,7 @@
   </div>
 
   <!-- WORK ON A TABULAR VIEW -->
-  <div class="record-container" ng-repeat="record in data.records">
+  <div class="record-container" ng-repeat="record in base.records">
       <af-adm value="record"></af-adm>
   </div>
 
