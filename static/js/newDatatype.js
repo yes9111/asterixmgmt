@@ -6,7 +6,7 @@ angular.module('asterface')
     controller: 'NewDatatypeController'
   });
 }])
-.controller('NewDatatypeController', ['$scope', 'asterix', function($scope, asterix){
+.controller('NewDatatypeController', ['$scope', 'asterix', 'base', function($scope, asterix, base){
   $scope.dataTypeForm = {
     name: "",
     fields: [],
@@ -22,7 +22,7 @@ angular.module('asterface')
     );
 
     var fields = [];
-    
+
     for(var key in $scope.dataTypeForm.fields)
     {
       var field = $scope.dataTypeForm.fields[key];

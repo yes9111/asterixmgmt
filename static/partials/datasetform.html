@@ -31,10 +31,10 @@
             <option ng-repeat="pkfield in base.datatypes[datasetForm.type].Derived.Record.Fields.orderedlist"
               value="{{pkfield.FieldName}}">{{pkfield.FieldName}}  ({{pkfield.FieldType}})</option>
           </select>
-          <button ng-click="datasetForm.addPrimaryKey()">Add Primary Key Field</button>
+          <button ng-disabled="!datasetForm.newPrimaryKey" ng-click="datasetForm.addPrimaryKey()">Add Primary Key Field</button>
         </td>
       </tr>
     </table>
-    <button ng-click="datasetForm.createDataset()">Create Dataset</button>
+    <button ng-disabled="datasetForm.primaryKeys.length == 0" ng-click="datasetForm.createDataset()">Create Dataset</button>
   </form>
 </div>

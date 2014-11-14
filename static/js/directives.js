@@ -2,7 +2,7 @@ angular.module('asterface')
 .directive('afAdm', ['$compile', 'asterix', function($compile, asterix){
   return {
     restrict: 'E',
-    scope: { value: '='},
+    scope: { value: '=', headerText: '='},
     link: function(scope, element, attrs){
       scope.$watch('value', function(newValue, oldValue){
         // reset browser
@@ -55,6 +55,9 @@ angular.module('asterface')
           }
           else{
             var header = angular.element('<div class="record collapsible">Record <span class="open-icon">[+]</span><span class="close-icon">[-]</span></div>');
+            if(scope.headerText){
+              header = angular.element('<div class="record collapsible">' + scope.headerText + ' <span class="open-icon">[+]</span><span class="close-icon">[-]</span></div>');
+            }
             var table = angular.element('<table></table>');
             element.append(header);
             element.append(table);

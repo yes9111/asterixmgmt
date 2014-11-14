@@ -1,0 +1,8 @@
+{
+  "name": "Asterix Manager",
+  "version": "1",
+  "homepage": "https://github.com/eug9111/asterixmgmt/",
+  "dependencies": {
+    "mime": "*"
+  }
+}

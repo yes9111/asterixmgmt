@@ -11,6 +11,22 @@ angular.module('asterface')
   var A = asterix.db;
   $scope.insert.extraFields = [];
 
+  $scope.getPKValue = function(record)
+  {
+    var PKfields = base.datasets[base.currentDataset].InternalDetails.PrimaryKey.orderedlist;
+    return PKfields.map(function(pk){
+      if(typeof record[pk] == 'string'){
+        return record[pk];
+      }
+      else if(asterix.extractNumber(record[pk]) !== false){
+        return asterix.extractNumber(record[pk]).toString();
+      }
+      return false;
+    }).filter(function(value){
+      return value != false;
+    }).join(', ');
+  }
+
   $scope.insert.update = function()
   {
     var record = {};

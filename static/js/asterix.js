@@ -79,7 +79,17 @@ angular.module('asterface', ['ngSanitize', 'ngRoute'])
         url: endpoint,
         params: params,
         transformResponse: appendTransform($http.defaults.transformResponse, function(response){
-          return eval('([' + response.results + '])');
+          try
+          {
+            return response.results.map(function(recordString){
+              return eval('(' + recordString + ')');
+            });
+          }
+          catch(e)
+          {
+            console.log("Could not parse Asterix output. ");
+            throw e;
+          }
         })
       }).catch(function(error){
         console.log('Failed to get response from Asterix backend');
@@ -113,8 +123,8 @@ angular.module('asterface', ['ngSanitize', 'ngRoute'])
           sprintf('"%s": %s', row, data[row].toString())
         );
       }
-      var dataString = sprintf('insert into dataset %s.%s {%s}', dataverse, dataset, dataFlattened.join(','));
-      return this.request('/query', {query: dataString});
+      var dataString = sprintf('insert into dataset %s.%s ({%s})', dataverse, dataset, dataFlattened.join(','));
+      return this.request('/update', {statements: dataString});
     }
   };
 }]);

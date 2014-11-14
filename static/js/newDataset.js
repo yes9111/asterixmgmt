@@ -7,7 +7,8 @@ angular.module('asterface')
 }])
 .controller('NewDatasetController', ['$scope', '$location', 'asterix', 'base', function($scope, $location, asterix, base){
   $scope.datasetForm = {
-    primaryKeys: []
+    primaryKeys: [],
+    newPrimaryKey: false
   };
 
   $scope.datasetForm.addPrimaryKey = function(){
