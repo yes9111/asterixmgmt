@@ -37,11 +37,11 @@
         <option ng-repeat="ds in base.datasets" ng-value="ds.DatasetName" ng-bind="ds.DatasetName">{{ds.DatasetName}}</option>
       </select>
 
-      <div ng-if="base.currentDataverse">
+      <span ng-show="base.currentDataverse">
         <a href="#/newdataset">New Dataset</a>
         <a href="#/newdatatype">New Datatype</a>
         <a href="#/query">Query</a>
-      </div>
+      </span>
     </div>
 
     <div id="content-box" ng-view>

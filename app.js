@@ -24,7 +24,7 @@ http.createServer(function(request, response){
 		http.get({
 			path: request.url,
 			port: 19002,
-			hostname: 'localhost',
+			hostname: '192.168.0.10',
 			headers: {
 				'Content-Type': 'application/json'
 			}

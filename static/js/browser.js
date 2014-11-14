@@ -7,10 +7,7 @@ angular.module('asterface')
     controller: 'BrowseController'
   });
 }])
-.factory('browser', ['asterix', function(asterix){
-  return null;
-}])
-.controller('BrowseController', ['$scope', '$location', 'asterix', 'browser', function($scope, $location, asterix, browser){
+.controller('BrowseController', ['$scope', '$location', 'asterix', 'types', 'base', function($scope, $location, asterix, types, base){
   var A = asterix.db;
   $scope.insert.extraFields = [];
 
@@ -24,22 +21,19 @@ angular.module('asterface')
 
       switch(fieldType)
       {
-      case "int8": case "int16": case "int32": case "int64": case "float": case "double":
-        record[ field.attr("name") ] = new AExpression( fieldType + "(\"" + field.val() + "\")");
-        break;
-
-      case "string":
-        record[ field.attr("name") ] = field.val();
+      case "int8": case "int16": case "int32": case "int64": case "float": case "double": case "string":
+        record[ field.attr("name") ] = new types[fieldType](field.val());
         break;
       default:
-	  	record[ field.attr("name") ] = new AExpression(field.val());
+	  	  record[ field.attr("name") ] = new AExpression(field.val());
         return;
       }
 
     });
 
-    //!TODO implement this
-    asterix.insert(base.currentDataverse, base.currentDataset, record);
+    asterix.insert(base.currentDataverse, base.currentDataset, record).then(function(result){
+      alert(JSON.stringify(result));
+    })
   };
 
   $scope.insert.addField = function(){
