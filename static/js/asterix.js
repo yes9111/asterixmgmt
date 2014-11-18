@@ -1,5 +1,5 @@
 'use strict'
-angular.module('asterface', ['ngSanitize', 'ngRoute'])
+angular.module('asterface', ['ngSanitize', 'ngRoute', 'ui.bootstrap'])
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider
   .otherwise({
@@ -58,10 +58,15 @@ angular.module('asterface', ['ngSanitize', 'ngRoute'])
   return types;
 })
 .factory('asterix', ['$http', function($http){
-  var appendTransform = function(defaults, newTransformer){
-    defaults = angular.isArray(defaults) ? defaults : [defaults];
-    return defaults.concat(newTransformer);
-  };
+  function request(endpoint, params){
+    return $http({
+      url: endpoint,
+      params: params,
+    }).catch(function(error){
+      console.log('Failed to get response from Asterix backend');
+    });
+  }
+
   return {
     extractNumber: function(obj){
       if(angular.isNumber(obj)) return obj;
@@ -74,27 +79,6 @@ angular.module('asterface', ['ngSanitize', 'ngRoute'])
       });
       return value;
     },
-    request: function(endpoint, params){
-      return $http({
-        url: endpoint,
-        params: params,
-        transformResponse: appendTransform($http.defaults.transformResponse, function(response){
-          try
-          {
-            return response.results.map(function(recordString){
-              return eval('(' + recordString + ')');
-            });
-          }
-          catch(e)
-          {
-            console.log("Could not parse Asterix output. ");
-            throw e;
-          }
-        })
-      }).catch(function(error){
-        console.log('Failed to get response from Asterix backend');
-      });
-    },
     query: function(queryString){
       if(arguments.length == 1){
         var queryString = arguments[0];
@@ -105,7 +89,19 @@ angular.module('asterface', ['ngSanitize', 'ngRoute'])
       else{
         throw "Invalid number of arguments";
       }
-      return this.request('/query', {query: queryString});
+      return request('/query', {query: queryString}).then(function(response){
+        try
+        {
+          return response.data.results.map(function(recordString){
+            return eval('(' + recordString + ')');
+          });
+        }
+        catch(e)
+        {
+          console.log("Could not parse Asterix output. ");
+          throw e;
+        }
+      });
     },
     ddl: function(queryString){
       if(arguments.length == 1){
@@ -114,7 +110,7 @@ angular.module('asterface', ['ngSanitize', 'ngRoute'])
       else if(arguments.length == 2){
         var queryString = 'use dataverse ' + arguments[0] + ';\n' + arguments[1];
       }
-      return this.request('/ddl', {ddl: queryString});
+      return request('/ddl', {ddl: queryString});
     },
     insert: function(dataverse, dataset, data){
       var dataFlattened = [];
@@ -124,7 +120,10 @@ angular.module('asterface', ['ngSanitize', 'ngRoute'])
         );
       }
       var dataString = sprintf('insert into dataset %s.%s ({%s})', dataverse, dataset, dataFlattened.join(','));
-      return this.request('/update', {statements: dataString});
+      return request('/update', {statements: dataString});
+    },
+    del: function(query){
+      return request('/update', {statements: query});
     }
   };
 }]);

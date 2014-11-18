@@ -48,7 +48,8 @@ angular.module('asterface')
     });
 
     asterix.insert(base.currentDataverse, base.currentDataset, record).then(function(result){
-      alert(JSON.stringify(result));
+      $scope.browsing.paging.page = 1;
+      base.loadRecords($scope.browsing.paging.itemsPerPage, $scope.browsing.paging.page);
     })
   };
 
@@ -61,20 +62,21 @@ angular.module('asterface')
 
   $scope.deleteRecord = function(rid)
   {
-    var pk = $scope.data.datasets[$scope.browsing.dataset].InternalDetails.PrimaryKey.orderedlist;
-    var record = $scope.data.records[rid];
+    var pk = base.datasets[base.currentDataset].InternalDetails.PrimaryKey.orderedlist;
+    var record = base.records[rid];
     var comps = [];
+    
     for(var k in pk)
     {
       var key = pk[k];
       var val = false;
 
       // support integers
-      if(asterix.helper.extractNumber(record[key]) !== false) val = asterix.helper.extractNumber(record[key]);
+      if(asterix.extractNumber(record[key]) !== false) val = asterix.extractNumber(record[key]);
       else if(typeof record[key] == "string") val = '"' + record[key] + '"';
       else alert("Unknown value (" + key + "): " + record[key]);
 
-      if(val === false){ return }
+      if(val === false){ return; }
 
       comps.push(new AExpression("$r." + key + "=" + val));
     }
@@ -82,8 +84,11 @@ angular.module('asterface')
     var where = new WhereClause();
     where.and(comps);
 
-    var delStmt = new DeleteStatement("$r", $scope.browsing.getLocation(), where);
-    A.update(delStmt.val(), $scope.refreshRecords);
+    var delStmt = new DeleteStatement("$r", base.currentDataverse + '.' + base.currentDataset, where);
+    alert(delStmt.val());
+    asterix.del(delStmt.val()).then(function(){
+      base.loadRecords($scope.browsing.paging.itemsPerPage, $scope.browsing.paging.page);
+    });
   };
 
   $scope.magnifyRecord = function (rid){

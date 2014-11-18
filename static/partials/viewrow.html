@@ -1,7 +1,7 @@
 
-<div ng-if="data.records.length" class="browser-box">
+<div ng-show="base.records.length" class="browser-box">
   <button ng-click="back()">Return</button>
-  <af-table record="data.records[rowId]">
+  <af-table record="base.records[rowId]">
 
   </af-table>
 </div>

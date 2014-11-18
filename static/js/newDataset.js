@@ -28,10 +28,10 @@ angular.module('asterface')
     );
 
     asterix.ddl(base.currentDataverse, query).then(function(result){
-      base.loadDatasets();
-      base.currentDataset = $scope.datasetForm['name'];
-      $location.path('/browse');
-
+      base.loadDatasets().then(function(){
+        base.currentDataset = $scope.datasetForm['name'];
+        $location.path('/browse');
+      })
     });
   };
 }])

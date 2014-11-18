@@ -9,7 +9,7 @@
 
   <div class="dataset-control-bar" >
     <button class="pure-button" ng-click="toggleForm()">+</button>
-    <div id="insert-box" ng-show="browsing.showInsertForm">
+    <div id="insert-box" collapse="!browsing.showInsertForm">
       <table>
         <tr ng-repeat="field in insert.fields">
           <td class="field-name">{{ field.FieldName }} ({{field.FieldType}})</td>
@@ -62,8 +62,10 @@
   </div>
 
   <!-- WORK ON A TABULAR VIEW -->
-  <div class="record-container" ng-repeat="record in base.records">
-      <af-adm value="record" header-text="getPKValue(record)"></af-adm>
+  <div class="record-container" ng-repeat="record in base.records" ng-show="base.records.length">
+    <af-adm value="record" header-text="getPKValue(record)"></af-adm>
+    <div class="record-control">
+      <btn ng-click="deleteRecord($index)" class="btn">X</btn>
+    </div>
   </div>
-
 </div> <!-- End of browser box -->

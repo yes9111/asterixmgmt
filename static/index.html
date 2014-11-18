@@ -2,9 +2,12 @@
 <html ng-app="asterface">
   <head>
     <script type="text/javascript" src="/static/js/lib/jquery-2.1.0.min.js"></script>
+    <script type="text/javascript" src="/static/js/lib/bootstrap.js"></script>
     <script type="text/javascript" src="/static/js/lib/jquery.collapsible.js"></script>
     <script type="text/javascript" src="/static/js/lib/asterix-sdk-stable.js"></script>
     <script type="text/javascript" src="/static/js/lib/angular-1.2.16.js"></script>
+    <script type="text/javascript" src="/static/js/lib/angular-ui.js"></script>
+    <script type="text/javascript" src="/static/js/lib/ui-bootstrap-tpls-0.12.0.js"></script>
     <script type="text/javascript" src="/static/js/lib/angular-route.js"></script>
     <script type="text/javascript" src="/static/js/lib/angular-sanitize.js"></script>
 
@@ -15,10 +18,12 @@
     <script type="text/javascript" src="/static/js/browser.js"></script>
     <script type="text/javascript" src="/static/js/newDataset.js"></script>
     <script type="text/javascript" src="/static/js/newDatatype.js"></script>
+    <script type="text/javascript" src="/static/js/newDataverse.js"></script>
     <script type="text/javascript" src="/static/js/query.js"></script>
     <script type="text/javascript" src="/static/js/viewRow.js"></script>
 
-    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
+    <link rel="stylesheet" href="/static/css/bootstrap.css">
+    <link rel="stylesheet" href="/static/css/angular-ui.css">
     <link rel="stylesheet" href="/static/css/manager.css">
     <title>Asterix Manager</title>
   </head>
@@ -31,6 +36,8 @@
       <select name="dataverse-selector" ng-model="base.currentDataverse" ng-change="loadDataverse();">
         <option ng-repeat="dv in base.dataverses" ng-value="dv.DataverseName">{{dv.DataverseName}}
         </option>
+        <option value="#null">---</option>
+        <option value="#newdataverse">New Dataverse</option>
       </select>
 
       <select name="dataset-selector" ng-model="base.currentDataset" ng-change="loadDataset();" ng-if="base.currentDataverse">

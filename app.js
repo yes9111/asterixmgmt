@@ -7,7 +7,8 @@ var path = require('path');
 var mime = require('mime');
 
 http.createServer(function(request, response){
-	var STATIC_PREFIX = '/static/'
+	var STATIC_PREFIX = '/static/';
+
 	if(request.url === '/'){
 		fs.createReadStream('static/index.html').pipe(response);
 	}
@@ -18,7 +19,9 @@ http.createServer(function(request, response){
 		var staticPath = path.join('static/', staticUrl);
 		fs.createReadStream(staticPath).pipe(response);
 	}
-	else if(request.url == '/favicon.ico') return;
+	else if(request.url == '/favicon.ico'){
+    return;
+  }
 	else{
 		//console.log(url.format(reqUrl));
 		http.get({

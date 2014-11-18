@@ -32,6 +32,7 @@ angular.module('asterface')
     query += fields.join(',') + '}';
 
     asterix.ddl(base.currentDataverse, query).then(function(){
+      base.loadDatatypes();
       alert("Successfully added type");
     });
   };

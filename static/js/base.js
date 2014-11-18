@@ -13,9 +13,9 @@ angular.module('asterface')
 
     loadDataverses: function(){
       var base = this;
-      asterix.query('Metadata', 'for $dv in dataset Dataverse return $dv;')
-      .then(function(results){
-        results.data.forEach(function(row){
+      return asterix.query('Metadata', 'for $dv in dataset Dataverse return $dv;')
+      .then(function(dataverses){
+        dataverses.forEach(function(row){
           base.dataverses[row.DataverseName] = row;
         });
       });
@@ -24,10 +24,10 @@ angular.module('asterface')
     loadDatasets: function(){
       var base = this;
       base.datasets = {};
-      asterix.query('Metadata', sprintf('for $ds in dataset Dataset where $ds.DataverseName="%s" return $ds',
+      return asterix.query('Metadata', sprintf('for $ds in dataset Dataset where $ds.DataverseName="%s" return $ds',
         this.currentDataverse
-      )).then(function(results){
-        results.data.forEach(function(dataset){
+      )).then(function(datasets){
+        datasets.forEach(function(dataset){
           base.datasets[dataset.DatasetName] = dataset;
         });
         base.records = [];
@@ -39,10 +39,10 @@ angular.module('asterface')
     loadDatatypes: function(){
       var base = this;
       base.datatypes = {};
-      asterix.query('Metadata', sprintf('for $dt in dataset Datatype where $dt.DataverseName="%s" return $dt',
+      return asterix.query('Metadata', sprintf('for $dt in dataset Datatype where $dt.DataverseName="%s" return $dt',
         this.currentDataverse
-      )).then(function(results){
-        results.data.forEach(function(datatype){
+      )).then(function(datatypes){
+        datatypes.forEach(function(datatype){
           base.datatypes[datatype.DatatypeName] = datatype;
         });
       });
@@ -58,8 +58,8 @@ angular.module('asterface')
         (page-1)*ipp
       );
 
-      asterix.query('Metadata', query).then(function(results){
-        base.records = results.data;
+      return asterix.query('Metadata', query).then(function(records){
+        base.records = records;
       });
     }
 
@@ -87,8 +87,15 @@ angular.module('asterface')
 
 	$scope.loadDataverse = function()
 	{
-    base.loadDatasets();
-    base.loadDatatypes();
+    if(base.currentDataverse == '#newdataverse')
+    {
+      $location.path('/newdataverse');
+    }
+    else
+    {
+      base.loadDatasets();
+      base.loadDatatypes();
+    }
 	};
 
 	$scope.loadDataset = function() {
@@ -105,4 +112,9 @@ angular.module('asterface')
     $scope.insert.isOpen = type.Derived.Record.IsOpen;
     $scope.insert.fields = type.Derived.Record.Fields.orderedlist;
   };
+
+  // load insert form if dataset is already present
+  if(base.currentDataverse && base.currentDataset){
+    $scope.loadInsertForm();
+  }
 }]);
