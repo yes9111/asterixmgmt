@@ -409,7 +409,7 @@ function InsertStatement(quantifiedName, query) {
             if (query[querykey] instanceof AExpression) {
                 insertStatements.push('"' + querykey + '" : ' + query[querykey].val());
             } else if (typeof query[querykey] == "string") {
-                insertStatements.push('"' + querykey + '" : ' + query[querykey]);
+                insertStatements.push('"' + querykey + '" : "' + query[querykey] + '"');
             } else {
                 insertStatements.push('"' + querykey + '" : ' + query[querykey].toString());
             }
@@ -438,6 +438,9 @@ function DeleteStatement (variable, quantifiedName, whereExpression) {
     
     if (whereExpression instanceof AExpression) {
         statement += " where " + whereExpression.val();
+    }
+    else if(whereExpression instanceof WhereClause){
+      statement += " " + whereExpression.val();
     }
     
     AExpression.prototype.set.call(this, statement);

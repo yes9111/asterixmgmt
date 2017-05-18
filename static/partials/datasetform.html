@@ -1,0 +1,40 @@
+<div ng-show="base.currentDataverse">
+  <form>
+    <h1>Creating New Dataset</h1>
+    <table>
+      <tr>
+        <td class="field-name">Dataset Name</td>
+        <td><input ng-model="datasetForm.name"></td>
+      </tr>
+      <tr>
+        <td class="field-name">Base Type</td>
+        <td>
+          <select ng-model="datasetForm.type">
+            <option ng-repeat="type in base.datatypes" value="{{type.DatatypeName}}">
+              {{type.DatatypeName}}
+            </option>
+          </select>
+        </td>
+      </tr>
+      <tr ng-if="datasetForm.type">
+        <!-- PRIMARY KEY PICKER -->
+        <td class="field-name">Primary Key</td>
+        <td>
+          <i>Current Primary Keys</i>
+
+            <div class="pk" ng-repeat="pk in datasetForm.primaryKeys">
+              <button ng-click="datasetForm.removePK($index)">X</button>
+              {{pk}}
+            </div>
+          <br>
+          <select ng-model="datasetForm.newPrimaryKey">
+            <option ng-repeat="pkfield in base.datatypes[datasetForm.type].Derived.Record.Fields.orderedlist"
+              value="{{pkfield.FieldName}}">{{pkfield.FieldName}}  ({{pkfield.FieldType}})</option>
+          </select>
+          <button class="btn" ng-disabled="!datasetForm.newPrimaryKey" ng-click="datasetForm.addPrimaryKey()">Add Primary Key Field</button>
+        </td>
+      </tr>
+    </table>
+    <button class="btn btn-primary btn-small" ng-disabled="datasetForm.primaryKeys.length == 0" ng-click="datasetForm.createDataset()">Create Dataset</button>
+  </form>
+</div>

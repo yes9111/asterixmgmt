@@ -5,6 +5,10 @@ body
   font-family:sans;
 }
 
+.hidden{
+  display:none;
+}
+
 body div.header
 {
   padding-left:1em;
@@ -18,9 +22,14 @@ body div.header h1
 body div.browser-bar
 {
   background:navy;
-  padding:0.3em 0;
-  padding-left:1em;
+  padding:0.3em 1em;
+  padding-right:2em;
   color:white;
+}
+
+body div.browser-bar select
+{
+  color:black;
 }
 
 body div.browser-bar label
@@ -33,7 +42,97 @@ body div.browser-bar select
   margin-right:1em;
 }
 
-body div.browser-box
+body div.browser-bar a{
+  color:white;
+  background:#99B2FF;
+  padding:0.2em;
+
+}
+
+body div#content-box
 {
-  padding:0 1em;
+  padding:1em 0.7em;
+}
+
+body div.browser-bar div.query-box{
+  float:right;
+}
+
+/* RECORD STYLES */
+
+body div.browser-box td.field-name
+{
+  color:white;
+  background:black;
+  font-weight:bold;
+  vertical-align:top;
+}
+
+body div.browser-box div.dataset-control-bar
+{
+  margin-top:1em;
+  margin-bottom:1em;
+}
+
+body div.browser-box div.record-control-bar
+{
+  float:right;
+}
+
+
+.query-box
+{
+  width:50%;
+  height:10em;
+  display:block;
+}
+
+.results-box
+{
+  background:lightgray;
+}
+
+.collapsible{
+  color:white;
+  padding:3px;
+  border-radius:4px;
+  cursor:pointer;
+}
+
+/** collapsible **/
+.collapsible.orderedlist{
+  background:darkgreen;
+}
+
+
+.collapsible.unorderedlist{
+  background:darkblue;
+}
+
+.collapsible.record{
+  background:darkred;
+}
+
+.collapse-open .open-icon{
+  display:none;
+}
+
+.collapse-close .close-icon{
+  display:none;
+}
+
+.record-container{
+  margin-bottom:1em;
+}
+
+td, th{
+  border:1px solid black;
+  margin:0;
+  padding:0.3em;
+}
+
+th{
+  background:black;
+  color:white;
+  font-weight:bold;
 }

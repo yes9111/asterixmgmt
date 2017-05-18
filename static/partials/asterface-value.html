@@ -1,0 +1,4 @@
+<tr ng-repeat="(field, value) in data.records[rowId]" class="record">
+  <td class="field-name">{{field}}</td>
+  <td ng-bind-html="printRowDetail(value)"></td>
+</tr>

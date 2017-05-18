@@ -1,1 +1,7 @@
 bottle.pyc
+*~
+~
+requests
+static/images
+node_modules
+*.swp
